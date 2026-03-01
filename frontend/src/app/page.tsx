@@ -850,6 +850,28 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
               </div>
             </div>
 
+            {/* Quick Links */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <a href="/calendar" className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg></div>
+                  <div><p className="text-sm font-bold text-slate-800 group-hover:text-blue-600">Court Calendar</p><p className="text-[10px] text-slate-400">Hearings & schedule</p></div>
+                </div>
+              </a>
+              <a href="/time" className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center"><svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></div>
+                  <div><p className="text-sm font-bold text-slate-800 group-hover:text-amber-600">Time Tracking</p><p className="text-[10px] text-slate-400">Billable hours & timer</p></div>
+                </div>
+              </a>
+              <a href="/invoices" className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center"><svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path d="M9 17h6M9 13h6M9 9h6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" /></svg></div>
+                  <div><p className="text-sm font-bold text-slate-800 group-hover:text-emerald-600">Invoicing</p><p className="text-[10px] text-slate-400">Billing & payments</p></div>
+                </div>
+              </a>
+            </div>
+
             {data.casesByType?.length > 0 && (
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
                 <h3 className="text-sm font-bold text-slate-800 mb-3">Cases by Practice Area</h3>
