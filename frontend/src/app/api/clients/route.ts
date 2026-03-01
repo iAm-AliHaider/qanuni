@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       const contacts = await sql`SELECT * FROM contacts WHERE client_id = ${id} ORDER BY is_primary DESC, name`;
       const documents = await sql`SELECT d.*, u.name as created_by_name FROM documents d LEFT JOIN users u ON d.created_by = u.id WHERE d.client_id = ${id} ORDER BY d.created_at DESC`;
       const invoices = await sql`SELECT * FROM invoices WHERE client_id = ${id} ORDER BY issue_date DESC`;
-      const retainers = await sql`SELECT * FROM retainers WHERE client_id = ${id} ORDER BY start_date DESC`;
+      const retainers = await sql`SELECT * FROM retainer_agreements WHERE client_id = ${id} ORDER BY start_date DESC`;
       const totalBilled = await sql`SELECT COALESCE(SUM(total_amount), 0) as total FROM invoices WHERE client_id = ${id}`;
       const totalPaid = await sql`SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE client_id = ${id} AND status = 'completed'`;
       return NextResponse.json({ ...client, cases, contacts, documents, invoices, retainers, totalBilled: Number(totalBilled[0]?.total || 0), totalPaid: Number(totalPaid[0]?.total || 0) });

@@ -755,14 +755,14 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
           <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
-                { label: "Active Cases", value: data.activeCases, color: "emerald" },
-                { label: "Hearings", value: data.upcomingHearings, color: "blue" },
-                { label: "Tasks", value: data.pendingTasks, color: "amber" },
-                { label: "Deadlines", value: data.overdueDeadlines, color: "red" },
-                { label: "Clients", value: data.totalClients, color: "violet" },
+                { label: "Active Cases", value: data.activeCases, border: "border-l-emerald-400", text: "text-emerald-600" },
+                { label: "Hearings", value: data.upcomingHearings, border: "border-l-blue-400", text: "text-blue-600" },
+                { label: "Tasks", value: data.pendingTasks, border: "border-l-amber-400", text: "text-amber-600" },
+                { label: "Deadlines", value: data.overdueDeadlines, border: "border-l-red-400", text: "text-red-600" },
+                { label: "Clients", value: data.totalClients, border: "border-l-violet-400", text: "text-violet-600" },
               ].map(kpi => (
-                <div key={kpi.label} className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-${kpi.color}-400`}>
-                  <p className={`text-2xl font-bold text-${kpi.color}-600`}>{kpi.value}</p>
+                <div key={kpi.label} className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 ${kpi.border}`}>
+                  <p className={`text-2xl font-bold ${kpi.text}`}>{kpi.value}</p>
                   <p className="text-[10px] text-slate-400 mt-0.5">{kpi.label}</p>
                 </div>
               ))}
