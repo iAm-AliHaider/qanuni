@@ -172,7 +172,7 @@ function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: a
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Case Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input label="Title *" value={form.title} onChange={(e: any) => set("title", e.target.value)} placeholder="Case title in English" />
           <Input label="Title (Arabic)" value={form.title_ar} onChange={(e: any) => set("title_ar", e.target.value)} placeholder="عنوان القضية" dir="rtl" />
           <Select label="Case Type *" value={form.case_type} onChange={(e: any) => set("case_type", e.target.value)} options={CASE_TYPES.map(t => ({ value: t, label: t.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()) }))} />
@@ -185,7 +185,7 @@ function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: a
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Opposing Side & Court</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input label="Opposing Party" value={form.opposing_party} onChange={(e: any) => set("opposing_party", e.target.value)} />
           <Input label="Opposing Counsel" value={form.opposing_counsel} onChange={(e: any) => set("opposing_counsel", e.target.value)} />
           <Input label="Court" value={form.court} onChange={(e: any) => set("court", e.target.value)} />
@@ -264,7 +264,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
               {cs.title_ar && <p className="text-sm text-slate-500 mt-0.5">{cs.title_ar}</p>}
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button onClick={() => onEdit(cs)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50"><EditIcon /> Edit</button>
             <select value={cs.status} onChange={e => updateStatus(e.target.value)} className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
               {CASE_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, " ").toUpperCase()}</option>)}
@@ -363,7 +363,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
       )}
 
       {tab === "time" && (
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden table-scroll">
           <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Time Entries</h3></div>
           {cs.timeEntries?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No time entries</div> :
             <table className="w-full text-xs">
@@ -420,7 +420,7 @@ function ClientForm({ clientData, onSave, onCancel }: { clientData?: any; onSave
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Client Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input label="Name *" value={form.name} onChange={(e: any) => set("name", e.target.value)} />
           <Input label="Name (Arabic)" value={form.name_ar} onChange={(e: any) => set("name_ar", e.target.value)} dir="rtl" />
           <Select label="Type" value={form.client_type} onChange={(e: any) => set("client_type", e.target.value)} options={[{ value: "individual", label: "Individual" }, { value: "corporate", label: "Corporate" }, { value: "government", label: "Government" }]} />
@@ -438,7 +438,7 @@ function ClientForm({ clientData, onSave, onCancel }: { clientData?: any; onSave
           <Input label={form.client_type === "corporate" ? "CR Number" : "National ID"} value={form.client_type === "corporate" ? form.cr_number : form.national_id} onChange={(e: any) => set(form.client_type === "corporate" ? "cr_number" : "national_id", e.target.value)} />
           <Input label="VAT Number" value={form.vat_number} onChange={(e: any) => set("vat_number", e.target.value)} />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input label="Address" value={form.address} onChange={(e: any) => set("address", e.target.value)} />
           <Input label="Address (Arabic)" value={form.address_ar} onChange={(e: any) => set("address_ar", e.target.value)} dir="rtl" />
         </div>
@@ -571,7 +571,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
           </div>
           {showContactForm && (
             <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
                 <Input label="Name" value={contactForm.name} onChange={(e: any) => setContactForm(p => ({ ...p, name: e.target.value }))} />
                 <Input label="Role" value={contactForm.role} onChange={(e: any) => setContactForm(p => ({ ...p, role: e.target.value }))} placeholder="e.g. CEO, Legal Rep" />
                 <Input label="Phone" value={contactForm.phone} onChange={(e: any) => setContactForm(p => ({ ...p, phone: e.target.value }))} />
@@ -731,8 +731,8 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {user.isPartner && <span className="px-2 py-1 rounded-lg bg-amber-50 border border-amber-100 text-[10px] font-semibold text-amber-700">Partner</span>}
-            {user.isAdmin && <span className="px-2 py-1 rounded-lg bg-red-50 border border-red-100 text-[10px] font-semibold text-red-600">Admin</span>}
+            {user.isPartner && <span className="hidden md:inline px-2 py-1 rounded-lg bg-amber-50 border border-amber-100 text-[10px] font-semibold text-amber-700">Partner</span>}
+            {user.isAdmin && <span className="hidden md:inline px-2 py-1 rounded-lg bg-red-50 border border-red-100 text-[10px] font-semibold text-red-600">Admin</span>}
             <button onClick={onLogout} className="p-2 rounded-xl hover:bg-slate-100"><LogoutIcon /></button>
           </div>
         </div>
@@ -747,13 +747,13 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-3 md:p-6 max-w-7xl mx-auto w-full pb-6">
         {!data ? <Spinner /> : (
 
         // ── OVERVIEW ──
         activeTab === "overview" ? (
           <div className="space-y-6 animate-fade-in">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
               {[
                 { label: "Active Cases", value: data.activeCases, border: "border-l-emerald-400", text: "text-emerald-600" },
                 { label: "Hearings", value: data.upcomingHearings, border: "border-l-blue-400", text: "text-blue-600" },
@@ -768,7 +768,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Recent Cases */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
@@ -851,7 +851,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
             </div>
 
             {/* Quick Links */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
               <a href="/calendar" className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 hover:shadow-md transition-all group">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg></div>

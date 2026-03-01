@@ -87,9 +87,9 @@ export default function InvoicesPage() {
         </div>
       </header>
 
-      <main className="p-4 md:p-6 max-w-6xl mx-auto space-y-4">
+      <main className="p-3 md:p-6 max-w-6xl mx-auto space-y-3 md:space-y-4">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-emerald-400">
             <p className="text-xl font-bold text-emerald-600">{Number(stats.total_invoiced || 0).toLocaleString()}</p>
             <p className="text-[10px] text-slate-400">Total Invoiced (SAR)</p>
@@ -115,6 +115,7 @@ export default function InvoicesPage() {
         {/* Invoice List */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Invoices</h3></div>
+          <div className="table-scroll">
           {invoices.length === 0 ? <div className="p-8 text-center text-xs text-slate-400">No invoices yet. Create your first invoice.</div> :
             <table className="w-full text-xs">
               <thead><tr className="bg-slate-50 text-slate-500"><th className="px-4 py-2 text-left font-medium">Ref</th><th className="px-4 py-2 text-left font-medium">Client</th><th className="px-4 py-2 text-left font-medium">Case</th><th className="px-4 py-2 text-left font-medium">Date</th><th className="px-4 py-2 text-left font-medium">Status</th><th className="px-4 py-2 text-right font-medium">Total (SAR)</th><th className="px-4 py-2 text-center font-medium">Actions</th></tr></thead>
@@ -143,12 +144,13 @@ export default function InvoicesPage() {
                 ))}
               </tbody>
             </table>}
+          </div>
         </div>
 
         {/* Create Invoice Modal */}
         {showCreate && (
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => setShowCreate(false)}>
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4 my-8" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto" onClick={() => setShowCreate(false)}>
+            <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg p-5 sm:p-6 space-y-4 max-h-[90dvh] overflow-y-auto sm:my-8" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-bold text-slate-900">Create Invoice</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -178,7 +180,7 @@ export default function InvoicesPage() {
                   <button onClick={() => setForm(p => ({ ...p, items: [...p.items, { description: "", quantity: 1, unit_price: 0, amount: 0, item_type: "service" }] }))} className="text-[10px] text-emerald-600 font-semibold">+ Add Item</button>
                 </div>
                 {form.items.map((item: any, idx: number) => (
-                  <div key={idx} className="grid grid-cols-12 gap-2 mb-2 items-end">
+                  <div key={idx} className="grid grid-cols-12 gap-1 md:gap-2 mb-2 items-end">
                     <input value={item.description} onChange={e => updateItem(idx, "description", e.target.value)} placeholder="Description" className="col-span-5 px-2 py-1.5 rounded border border-slate-200 text-xs" />
                     <input type="number" value={item.quantity} onChange={e => updateItem(idx, "quantity", e.target.value)} className="col-span-2 px-2 py-1.5 rounded border border-slate-200 text-xs text-center" />
                     <input type="number" value={item.unit_price} onChange={e => updateItem(idx, "unit_price", e.target.value)} placeholder="Rate" className="col-span-2 px-2 py-1.5 rounded border border-slate-200 text-xs" />

@@ -106,13 +106,13 @@ export default function TimePage() {
         </div>
       </header>
 
-      <main className="p-4 md:p-6 max-w-5xl mx-auto space-y-4">
+      <main className="p-3 md:p-6 max-w-5xl mx-auto space-y-3 md:space-y-4">
         {/* Timer */}
         <div className={`bg-white rounded-2xl border shadow-sm p-5 text-center ${timing ? "border-emerald-300 bg-emerald-50/30" : "border-slate-200/80"}`}>
-          <p className="text-4xl font-mono font-bold text-slate-900 mb-3">{formatTimer(timerSeconds)}</p>
+          <p className="text-3xl md:text-4xl font-mono font-bold text-slate-900 mb-3">{formatTimer(timerSeconds)}</p>
           {!timing ? (
             <div className="space-y-3">
-              <div className="flex gap-2 max-w-md mx-auto">
+              <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
                 <select value={timerCase} onChange={e => setTimerCase(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">
                   <option value="">Select case...</option>
                   {cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref} — {c.title?.slice(0, 30)}</option>)}
@@ -131,7 +131,7 @@ export default function TimePage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-blue-400">
             <p className="text-2xl font-bold text-blue-600">{Number(stats.total_hours || 0).toFixed(1)}h</p>
             <p className="text-[10px] text-slate-400">Total Hours</p>

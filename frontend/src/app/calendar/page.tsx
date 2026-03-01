@@ -58,7 +58,7 @@ export default function CalendarPage() {
             <button onClick={prev} className="p-2 rounded-xl hover:bg-slate-100">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <span className="text-sm font-semibold text-slate-800 min-w-[160px] text-center">{monthName}</span>
+            <span className="text-xs md:text-sm font-semibold text-slate-800 min-w-[120px] md:min-w-[160px] text-center">{monthName}</span>
             <button onClick={next} className="p-2 rounded-xl hover:bg-slate-100">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M9 5l7 7-7 7" /></svg>
             </button>
@@ -66,9 +66,9 @@ export default function CalendarPage() {
         </div>
       </header>
 
-      <main className="p-4 md:p-6 max-w-7xl mx-auto">
+      <main className="p-2 md:p-6 max-w-7xl mx-auto">
         {/* Legend */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="hidden md:flex flex-wrap gap-2 mb-4">
           {Object.entries(TYPE_COLORS).filter(([k]) => k !== "default").map(([type, colors]) => (
             <span key={type} className={`px-2 py-0.5 rounded text-[9px] font-medium ${colors}`}>{type.replace(/_/g, " ")}</span>
           ))}
@@ -86,7 +86,7 @@ export default function CalendarPage() {
           {/* Day cells */}
           <div className="grid grid-cols-7">
             {days.map((day, i) => {
-              if (day === null) return <div key={`empty-${i}`} className="min-h-[100px] border-b border-r border-slate-50 bg-slate-50/30" />;
+              if (day === null) return <div key={`empty-${i}`} className="min-h-[60px] md:min-h-[100px] border-b border-r border-slate-50 bg-slate-50/30" />;
               const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
               const dayHearings = getHearingsForDay(day);
               const isToday = dateStr === today;
@@ -94,13 +94,13 @@ export default function CalendarPage() {
               const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
 
               return (
-                <div key={day} className={`min-h-[100px] border-b border-r border-slate-50 p-1 ${isWeekend ? "bg-slate-50/50" : ""} ${isToday ? "bg-emerald-50/30" : ""}`}>
+                <div key={day} className={`min-h-[60px] md:min-h-[100px] border-b border-r border-slate-50 p-0.5 md:p-1 ${isWeekend ? "bg-slate-50/50" : ""} ${isToday ? "bg-emerald-50/30" : ""}`}>
                   <div className={`text-[11px] font-semibold mb-1 px-1 ${isToday ? "text-emerald-600" : "text-slate-400"}`}>
                     {isToday ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px]">{day}</span> : day}
                   </div>
                   <div className="space-y-0.5">
                     {dayHearings.map(h => (
-                      <button key={h.id} onClick={() => setSelected(h)} className={`w-full text-left px-1.5 py-1 rounded border-l-2 text-[9px] leading-tight truncate ${TYPE_COLORS[h.hearing_type] || TYPE_COLORS.default}`}>
+                      <button key={h.id} onClick={() => setSelected(h)} className={`w-full text-left px-1 py-0.5 md:px-1.5 md:py-1 rounded border-l-2 text-[8px] md:text-[9px] leading-tight truncate ${TYPE_COLORS[h.hearing_type] || TYPE_COLORS.default}`}>
                         <span className="font-bold">{h.hearing_time}</span>
                         <span className="block truncate">{h.case_title?.split(" ").slice(0, 3).join(" ")}</span>
                       </button>
@@ -113,7 +113,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Stats bar */}
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-blue-400">
             <p className="text-2xl font-bold text-blue-600">{hearings.length}</p>
             <p className="text-[10px] text-slate-400">Hearings This Month</p>
