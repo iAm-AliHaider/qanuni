@@ -304,7 +304,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
           <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Hearings</h3></div>
           {cs.hearings?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No hearings scheduled</div> :
             <div className="divide-y divide-slate-50">
-              {cs.hearings.map((h: any) => (
+              {(cs.hearings||[]).map((h: any) => (
                 <div key={h.id} className="px-4 py-3 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-semibold text-slate-800">{h.hearing_type}</p>
@@ -326,7 +326,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
           <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Tasks</h3></div>
           {cs.tasks?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No tasks</div> :
             <div className="divide-y divide-slate-50">
-              {cs.tasks.map((t: any) => (
+              {(cs.tasks||[]).map((t: any) => (
                 <div key={t.id} className="px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <input type="checkbox" checked={t.status === "completed"} onChange={() => updateTask(t.id, t.status === "completed" ? "todo" : "completed")} className="rounded border-slate-300" />
@@ -350,7 +350,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
               <button onClick={addNote} disabled={!noteText.trim() || saving} className="px-4 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-semibold disabled:opacity-40">{saving ? "Saving..." : "Add Note"}</button>
             </div>
           </div>
-          {cs.notes?.map((n: any) => (
+          {(cs.notes||[]).map((n: any) => (
             <div key={n.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
               <div className="flex justify-between mb-2">
                 <span className="text-[10px] font-medium text-slate-500">{n.author_name}</span>
@@ -368,7 +368,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
           {cs.timeEntries?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No time entries</div> :
             <table className="w-full text-xs">
               <thead><tr className="bg-slate-50 text-slate-500"><th className="px-4 py-2 text-left font-medium">Date</th><th className="px-4 py-2 text-left font-medium">Lawyer</th><th className="px-4 py-2 text-left font-medium">Description</th><th className="px-4 py-2 text-right font-medium">Hours</th><th className="px-4 py-2 text-right font-medium">Amount</th></tr></thead>
-              <tbody>{cs.timeEntries.map((te: any) => (
+              <tbody>{(cs.timeEntries||[]).map((te: any) => (
                 <tr key={te.id} className="border-t border-slate-50"><td className="px-4 py-2 text-slate-500">{te.entry_date}</td><td className="px-4 py-2 text-slate-700">{te.user_name}</td><td className="px-4 py-2 text-slate-600">{te.description}</td><td className="px-4 py-2 text-right font-bold">{te.hours}h</td><td className="px-4 py-2 text-right font-bold text-emerald-600">{Number(te.amount).toLocaleString()} SAR</td></tr>
               ))}</tbody>
             </table>}
@@ -380,7 +380,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
           <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Documents</h3></div>
           {cs.documents?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No documents</div> :
             <div className="divide-y divide-slate-50">
-              {cs.documents.map((d: any) => (
+              {(cs.documents||[]).map((d: any) => (
                 <div key={d.id} className="px-4 py-3 flex items-center justify-between">
                   <div><p className="text-xs font-medium text-slate-800">{d.title}</p><p className="text-[10px] text-slate-400">{d.document_type} · {d.created_by_name} · {d.created_at}</p></div>
                 </div>
@@ -548,7 +548,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
 
       {tab === "cases" && (
         <div className="space-y-3">
-          {cl.cases?.map((c: any) => (
+          {(cl.cases||[]).map((c: any) => (
             <div key={c.id} onClick={() => onOpenCase(c.id)} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 hover:shadow-md cursor-pointer transition-all">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[10px] font-mono text-slate-400">{c.ref}</span>
@@ -609,7 +609,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
             {cl.invoices?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No invoices</div> :
               <table className="w-full text-xs">
                 <thead><tr className="bg-slate-50 text-slate-500"><th className="px-4 py-2 text-left font-medium">Ref</th><th className="px-4 py-2 text-left font-medium">Date</th><th className="px-4 py-2 text-left font-medium">Status</th><th className="px-4 py-2 text-right font-medium">Amount</th></tr></thead>
-                <tbody>{cl.invoices.map((inv: any) => (
+                <tbody>{(cl.invoices||[]).map((inv: any) => (
                   <tr key={inv.id} className="border-t border-slate-50"><td className="px-4 py-2 font-mono">{inv.ref}</td><td className="px-4 py-2">{inv.invoice_date}</td><td className="px-4 py-2"><Badge text={inv.status} colors={STATUS_COLORS[inv.status]} /></td><td className="px-4 py-2 text-right font-bold text-emerald-600">{Number(inv.total).toLocaleString()} SAR</td></tr>
                 ))}</tbody>
               </table>}
@@ -617,7 +617,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Retainers</h3></div>
             {cl.retainers?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No retainers</div> :
-              <div className="divide-y divide-slate-50">{cl.retainers.map((r: any) => (
+              <div className="divide-y divide-slate-50">{(cl.retainers||[]).map((r: any) => (
                 <div key={r.id} className="px-4 py-3 flex justify-between"><div><p className="text-xs font-medium text-slate-800">{r.start_date} — {r.end_date || "Ongoing"}</p><p className="text-[10px] text-slate-400">Type: {r.agreement_type}</p></div><p className="text-sm font-bold text-emerald-600">{Number(r.amount).toLocaleString()} SAR</p></div>
               ))}</div>}
           </div>

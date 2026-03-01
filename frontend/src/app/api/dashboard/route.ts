@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       const [overdueDeadlines] = await sql`SELECT COUNT(*) as count FROM deadlines WHERE deadline_date < CURRENT_DATE::TEXT AND status='pending'`;
       const [totalClients] = await sql`SELECT COUNT(*) as count FROM clients WHERE is_active=1`;
       const casesByType = await sql`SELECT case_type, COUNT(*) as count FROM cases WHERE status NOT IN ('closed','archived') GROUP BY case_type ORDER BY count DESC`;
-      const recentCases = await sql`SELECT cs.ref, cs.title, cs.case_type, cs.status, cs.priority, cl.name as client_name 
+      const recentCases = await sql`SELECT cs.id, cs.ref, cs.title, cs.case_type, cs.status, cs.priority, cl.name as client_name 
         FROM cases cs LEFT JOIN clients cl ON cs.client_id = cl.id 
         WHERE cs.status NOT IN ('closed','archived') ORDER BY cs.created_at DESC LIMIT 5`;
       const upcomingHearingsList = await sql`SELECT h.ref, h.hearing_date, h.hearing_time, h.hearing_type, cs.ref as case_ref, cs.title as case_title, ct.name as court_name
