@@ -479,7 +479,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
 
   const tabs = [
     { key: "overview", label: "Overview" }, { key: "cases", label: `Cases (${cl.cases?.length || 0})` },
-    { key: "contacts", label: `Contacts (${cl.contacts?.length || 0})` }, { key: "financial", label: "Financial" },
+     { key: "financial", label: "Financial" },
   ];
 
   return (
@@ -610,7 +610,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
               <table className="w-full text-xs">
                 <thead><tr className="bg-slate-50 text-slate-500"><th className="px-4 py-2 text-left font-medium">Ref</th><th className="px-4 py-2 text-left font-medium">Date</th><th className="px-4 py-2 text-left font-medium">Status</th><th className="px-4 py-2 text-right font-medium">Amount</th></tr></thead>
                 <tbody>{cl.invoices.map((inv: any) => (
-                  <tr key={inv.id} className="border-t border-slate-50"><td className="px-4 py-2 font-mono">{inv.ref}</td><td className="px-4 py-2">{inv.issue_date}</td><td className="px-4 py-2"><Badge text={inv.status} colors={STATUS_COLORS[inv.status]} /></td><td className="px-4 py-2 text-right font-bold text-emerald-600">{Number(inv.total_amount).toLocaleString()} SAR</td></tr>
+                  <tr key={inv.id} className="border-t border-slate-50"><td className="px-4 py-2 font-mono">{inv.ref}</td><td className="px-4 py-2">{inv.invoice_date}</td><td className="px-4 py-2"><Badge text={inv.status} colors={STATUS_COLORS[inv.status]} /></td><td className="px-4 py-2 text-right font-bold text-emerald-600">{Number(inv.total).toLocaleString()} SAR</td></tr>
                 ))}</tbody>
               </table>}
           </div>
@@ -618,7 +618,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
             <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Retainers</h3></div>
             {cl.retainers?.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No retainers</div> :
               <div className="divide-y divide-slate-50">{cl.retainers.map((r: any) => (
-                <div key={r.id} className="px-4 py-3 flex justify-between"><div><p className="text-xs font-medium text-slate-800">{r.start_date} — {r.end_date || "Ongoing"}</p><p className="text-[10px] text-slate-400">Balance: {Number(r.balance).toLocaleString()} SAR</p></div><p className="text-sm font-bold text-emerald-600">{Number(r.monthly_amount).toLocaleString()} SAR/mo</p></div>
+                <div key={r.id} className="px-4 py-3 flex justify-between"><div><p className="text-xs font-medium text-slate-800">{r.start_date} — {r.end_date || "Ongoing"}</p><p className="text-[10px] text-slate-400">Type: {r.agreement_type}</p></div><p className="text-sm font-bold text-emerald-600">{Number(r.amount).toLocaleString()} SAR</p></div>
               ))}</div>}
           </div>
         </div>
@@ -646,7 +646,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
 
   useEffect(() => {
     fetch("/api/auth").then(r => r.json()).then(setAllUsers);
-    fetch("/api/clients").then(r => r.json()).then(setAllClients);
+    fetch("/api/clients").then(r => r.json()).then(d => setAllClients(Array.isArray(d) ? d : [])).catch(() => setAllClients([]));
   }, []);
 
   const loadTab = useCallback(() => {
@@ -669,7 +669,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
     const isEdit = showCaseForm?.id;
     await fetch("/api/cases", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: isEdit ? "update" : "create", ...(isEdit ? { id: showCaseForm.id } : {}), ...form, created_by: user.id }) });
     setShowCaseForm(null);
-    fetch("/api/clients").then(r => r.json()).then(setAllClients);
+    fetch("/api/clients").then(r => r.json()).then(d => setAllClients(Array.isArray(d) ? d : [])).catch(() => setAllClients([]));
     loadTab();
   };
 
@@ -677,7 +677,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
     const isEdit = showClientForm?.id;
     await fetch("/api/clients", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: isEdit ? "update" : "create", ...(isEdit ? { id: showClientForm.id } : {}), ...form, created_by: user.id }) });
     setShowClientForm(null);
-    fetch("/api/clients").then(r => r.json()).then(setAllClients);
+    fetch("/api/clients").then(r => r.json()).then(d => setAllClients(Array.isArray(d) ? d : [])).catch(() => setAllClients([]));
     loadTab();
   };
 

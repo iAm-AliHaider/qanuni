@@ -3,7 +3,6 @@ import { neon } from "@neondatabase/serverless";
 
 const sql = neon(process.env.DATABASE_URL!);
 
-// GET /api/clients?id=X — single client or list
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
@@ -13,37 +12,31 @@ export async function GET(request: NextRequest) {
       const [client] = await sql`SELECT * FROM clients WHERE id = ${id}`;
       if (!client) return NextResponse.json({ error: "Not found" }, { status: 404 });
       const cases = await sql`SELECT cs.*, u1.name as partner_name FROM cases cs LEFT JOIN users u1 ON cs.assigned_partner = u1.id WHERE cs.client_id = ${id} ORDER BY cs.created_at DESC`;
-      const contacts = await sql`SELECT * FROM contacts WHERE client_id = ${id} ORDER BY is_primary DESC, name`;
       const documents = await sql`SELECT d.*, u.name as created_by_name FROM documents d LEFT JOIN users u ON d.created_by = u.id WHERE d.client_id = ${id} ORDER BY d.created_at DESC`;
-      const invoices = await sql`SELECT * FROM invoices WHERE client_id = ${id} ORDER BY issue_date DESC`;
+      const invoices = await sql`SELECT * FROM invoices WHERE client_id = ${id} ORDER BY invoice_date DESC`;
       const retainers = await sql`SELECT * FROM retainer_agreements WHERE client_id = ${id} ORDER BY start_date DESC`;
-      const totalBilled = await sql`SELECT COALESCE(SUM(total_amount), 0) as total FROM invoices WHERE client_id = ${id}`;
-      const totalPaid = await sql`SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE client_id = ${id} AND status = 'completed'`;
-      return NextResponse.json({ ...client, cases, contacts, documents, invoices, retainers, totalBilled: Number(totalBilled[0]?.total || 0), totalPaid: Number(totalPaid[0]?.total || 0) });
+      const totalBilled = await sql`SELECT COALESCE(SUM(total), 0) as total FROM invoices WHERE client_id = ${id}`;
+      const totalPaid = await sql`SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE client_id = ${id}`;
+      return NextResponse.json({ ...client, cases, contacts: [], documents, invoices, retainers, totalBilled: Number(totalBilled[0]?.total || 0), totalPaid: Number(totalPaid[0]?.total || 0) });
     }
 
     const search = searchParams.get("q");
     const type = searchParams.get("type");
-    const kyc = searchParams.get("kyc");
 
     let clients;
     if (search) {
       const q = `%${search}%`;
       clients = await sql`SELECT cl.*, (SELECT COUNT(*) FROM cases WHERE client_id = cl.id) as case_count,
-        (SELECT COALESCE(SUM(total_amount), 0) FROM invoices WHERE client_id = cl.id) as total_billed
+        (SELECT COALESCE(SUM(total), 0) FROM invoices WHERE client_id = cl.id) as total_billed
         FROM clients cl WHERE (cl.name ILIKE ${q} OR cl.name_ar ILIKE ${q} OR cl.ref ILIKE ${q} OR cl.phone ILIKE ${q} OR cl.national_id ILIKE ${q})
         ORDER BY cl.name`;
     } else if (type) {
       clients = await sql`SELECT cl.*, (SELECT COUNT(*) FROM cases WHERE client_id = cl.id) as case_count,
-        (SELECT COALESCE(SUM(total_amount), 0) FROM invoices WHERE client_id = cl.id) as total_billed
+        (SELECT COALESCE(SUM(total), 0) FROM invoices WHERE client_id = cl.id) as total_billed
         FROM clients cl WHERE cl.client_type = ${type} ORDER BY cl.name`;
-    } else if (kyc) {
-      clients = await sql`SELECT cl.*, (SELECT COUNT(*) FROM cases WHERE client_id = cl.id) as case_count,
-        (SELECT COALESCE(SUM(total_amount), 0) FROM invoices WHERE client_id = cl.id) as total_billed
-        FROM clients cl WHERE cl.kyc_status = ${kyc} ORDER BY cl.name`;
     } else {
       clients = await sql`SELECT cl.*, (SELECT COUNT(*) FROM cases WHERE client_id = cl.id) as case_count,
-        (SELECT COALESCE(SUM(total_amount), 0) FROM invoices WHERE client_id = cl.id) as total_billed
+        (SELECT COALESCE(SUM(total), 0) FROM invoices WHERE client_id = cl.id) as total_billed
         FROM clients cl ORDER BY cl.name`;
     }
     return NextResponse.json(clients);
@@ -52,7 +45,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/clients — create, update, add contact
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -93,19 +85,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    if (action === "add_contact") {
-      await sql`INSERT INTO contacts (client_id, name, name_ar, role, phone, email, is_primary) 
-        VALUES (${data.client_id}, ${data.name}, ${data.name_ar || null}, ${data.role || null}, ${data.phone || null}, ${data.email || null}, ${data.is_primary ? 1 : 0})`;
-      return NextResponse.json({ ok: true });
-    }
-
-    if (action === "delete_contact") {
-      await sql`DELETE FROM contacts WHERE id = ${data.id}`;
-      return NextResponse.json({ ok: true });
-    }
-
     if (action === "delete") {
-      // Check for active cases
       const [check] = await sql`SELECT COUNT(*) as c FROM cases WHERE client_id = ${data.id} AND status NOT IN ('closed','archived')`;
       if (Number(check.c) > 0) return NextResponse.json({ error: "Cannot delete client with active cases" }, { status: 400 });
       await sql`UPDATE clients SET is_active = 0 WHERE id = ${data.id}`;
