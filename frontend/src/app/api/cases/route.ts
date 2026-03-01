@@ -3,7 +3,6 @@ import { neon } from "@neondatabase/serverless";
 
 const sql = neon(process.env.DATABASE_URL!);
 
-// GET /api/cases?id=X — single case detail, or list all
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
@@ -26,7 +25,7 @@ export async function GET(request: NextRequest) {
         WHERE h.case_id = ${id} ORDER BY h.hearing_date DESC`;
       const tasks = await sql`SELECT t.*, u.name as assignee_name FROM tasks t LEFT JOIN users u ON t.assigned_to = u.id WHERE t.case_id = ${id} ORDER BY t.due_date`;
       const deadlines = await sql`SELECT * FROM deadlines WHERE case_id = ${id} ORDER BY deadline_date`;
-      const notes = await sql`SELECT cn.*, u.name as author_name FROM case_notes cn LEFT JOIN users u ON cn.created_by = u.id WHERE cn.case_id = ${id} ORDER BY cn.created_at DESC`;
+      const notes = await sql`SELECT cn.*, u.name as author_name FROM case_notes cn LEFT JOIN users u ON cn.user_id = u.id WHERE cn.case_id = ${id} ORDER BY cn.created_at DESC`;
       const parties = await sql`SELECT * FROM case_parties WHERE case_id = ${id}`;
       const timeEntries = await sql`SELECT te.*, u.name as user_name FROM time_entries te LEFT JOIN users u ON te.user_id = u.id WHERE te.case_id = ${id} ORDER BY te.entry_date DESC`;
       const documents = await sql`SELECT d.*, u.name as created_by_name FROM documents d LEFT JOIN users u ON d.created_by = u.id WHERE d.case_id = ${id} ORDER BY d.created_at DESC`;
@@ -34,7 +33,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ...cs, hearings, tasks, deadlines, notes, parties, timeEntries, documents });
     }
 
-    // List all cases with filters
     const status = searchParams.get("status");
     const type = searchParams.get("type");
     const search = searchParams.get("q");
@@ -74,7 +72,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/cases — create or update
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -123,12 +120,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "add_note") {
-      await sql`INSERT INTO case_notes (case_id, note_type, content, created_by) VALUES (${data.case_id}, ${data.note_type || 'general'}, ${data.content}, ${data.created_by || null})`;
+      await sql`INSERT INTO case_notes (case_id, note_type, note, user_id) VALUES (${data.case_id}, ${data.note_type || 'general'}, ${data.content}, ${data.created_by || null})`;
       return NextResponse.json({ ok: true });
     }
 
     if (action === "add_task") {
-      const [row] = await sql`INSERT INTO tasks (ref, case_id, title, description, priority, due_date, assigned_to, assigned_by, task_type) 
+      const [row] = await sql`INSERT INTO tasks (ref, case_id, title, description, priority, due_date, assigned_to, assigned_by, category) 
         VALUES (gen_random_uuid()::TEXT, ${data.case_id}, ${data.title}, ${data.description || null}, ${data.priority || 'medium'}, ${data.due_date || null}, ${data.assigned_to || null}, ${data.assigned_by || null}, ${data.task_type || 'general'})
         RETURNING id`;
       const ref = `TSK-${String(row.id).padStart(4, '0')}`;
@@ -142,14 +139,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "add_deadline") {
-      await sql`INSERT INTO deadlines (case_id, title, deadline_date, priority, assigned_to, reminder_days) 
+      await sql`INSERT INTO deadlines (case_id, title, deadline_date, priority, assigned_to, days_before_alert) 
         VALUES (${data.case_id}, ${data.title}, ${data.deadline_date}, ${data.priority || 'high'}, ${data.assigned_to || null}, ${data.reminder_days || 3})`;
       return NextResponse.json({ ok: true });
     }
 
     if (action === "add_time") {
       const amount = (data.hours || 0) * (data.rate || 0);
-      await sql`INSERT INTO time_entries (case_id, user_id, entry_date, hours, rate, amount, description, billable, activity_type) 
+      await sql`INSERT INTO time_entries (case_id, user_id, entry_date, hours, rate, amount, description, is_billable, activity_type) 
         VALUES (${data.case_id}, ${data.user_id}, ${data.entry_date || new Date().toISOString().slice(0, 10)}, ${data.hours}, ${data.rate || 0}, ${amount}, ${data.description || null}, ${data.billable !== false ? 1 : 0}, ${data.activity_type || 'research'})`;
       return NextResponse.json({ ok: true });
     }

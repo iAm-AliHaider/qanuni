@@ -353,10 +353,10 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
           {(cs.notes||[]).map((n: any) => (
             <div key={n.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
               <div className="flex justify-between mb-2">
-                <span className="text-[10px] font-medium text-slate-500">{n.author_name}</span>
+                <span className="text-[10px] font-medium text-slate-500">{n.author_name || "Unknown"}</span>
                 <span className="text-[10px] text-slate-400">{n.created_at}</span>
               </div>
-              <p className="text-sm text-slate-700 whitespace-pre-wrap">{n.content}</p>
+              <p className="text-sm text-slate-700 whitespace-pre-wrap">{n.note}</p>
             </div>
           ))}
         </div>
@@ -382,7 +382,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
             <div className="divide-y divide-slate-50">
               {(cs.documents||[]).map((d: any) => (
                 <div key={d.id} className="px-4 py-3 flex items-center justify-between">
-                  <div><p className="text-xs font-medium text-slate-800">{d.title}</p><p className="text-[10px] text-slate-400">{d.document_type} · {d.created_by_name} · {d.created_at}</p></div>
+                  <div><p className="text-xs font-medium text-slate-800">{d.title}</p><p className="text-[10px] text-slate-400">{d.doc_type} · {d.created_by_name} · {d.created_at}</p></div>
                 </div>
               ))}
             </div>}
