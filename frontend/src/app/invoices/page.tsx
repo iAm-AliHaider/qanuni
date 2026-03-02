@@ -1,4 +1,5 @@
 "use client";
+import AppShell from "@/components/AppShell";
 
 import { useState, useEffect } from "react";
 
@@ -71,7 +72,7 @@ export default function InvoicesPage() {
   const stats = data?.stats || {};
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFBFC]">
+    <AppShell><div className="min-h-[100dvh] bg-transparent">
       <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30">
         <div className="px-4 md:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
@@ -244,6 +245,6 @@ export default function InvoicesPage() {
           </div>
         )}
       </main>
-    </div>
+    </div></AppShell>
   );
 }

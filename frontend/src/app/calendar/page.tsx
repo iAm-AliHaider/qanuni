@@ -1,4 +1,5 @@
 "use client";
+import AppShell from "@/components/AppShell";
 
 import { useState, useEffect } from "react";
 
@@ -44,7 +45,7 @@ export default function CalendarPage() {
   for (let d = 1; d <= daysInMonth; d++) days.push(d);
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFBFC]">
+    <AppShell><div className="min-h-[100dvh] bg-transparent">
       {/* Header */}
       <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30">
         <div className="px-4 md:px-6 flex items-center justify-between h-14">
@@ -159,6 +160,6 @@ export default function CalendarPage() {
           </div>
         )}
       </main>
-    </div>
+    </div></AppShell>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import AppShell from "@/components/AppShell";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -90,7 +91,7 @@ export default function TimePage() {
   if (!user) return <div className="min-h-screen flex items-center justify-center text-sm text-slate-400">Please log in first</div>;
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFBFC]">
+    <AppShell><div className="min-h-[100dvh] bg-transparent">
       <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30">
         <div className="px-4 md:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
@@ -226,6 +227,6 @@ export default function TimePage() {
           </div>
         )}
       </main>
-    </div>
+    </div></AppShell>
   );
 }

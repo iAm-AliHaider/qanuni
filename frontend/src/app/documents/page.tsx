@@ -1,0 +1,91 @@
+"use client";
+import AppShell from "@/components/AppShell";
+
+import { useState, useEffect } from "react";
+
+const DOC_TYPES = ["pleading", "contract", "memo", "letter", "court_order", "evidence", "poa", "general"];
+const CATEGORIES = ["pleadings", "contracts", "correspondence", "court_filings", "evidence", "internal", "templates", "general"];
+const CAT_COLORS: Record<string, string> = { pleadings: "bg-blue-100 text-blue-700", contracts: "bg-violet-100 text-violet-700", correspondence: "bg-amber-100 text-amber-700", court_filings: "bg-red-100 text-red-700", evidence: "bg-teal-100 text-teal-700", internal: "bg-slate-100 text-slate-600", templates: "bg-emerald-100 text-emerald-700", general: "bg-gray-100 text-gray-500" };
+
+export default function DocumentsPage() {
+  const [user, setUser] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
+  const [filter, setFilter] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [cases, setCases] = useState<any[]>([]);
+  const [form, setForm] = useState({ title: "", title_ar: "", doc_type: "general", category: "general", case_id: "", content: "" });
+
+  useEffect(() => {
+    try { const s = localStorage.getItem("qanuni_user"); if (s) setUser(JSON.parse(s)); } catch {}
+    fetch("/api/cases").then(r => r.json()).then(d => setCases(Array.isArray(d) ? d : []));
+  }, []);
+
+  const load = () => { const url = filter ? `/api/documents?category=${filter}` : "/api/documents"; fetch(url).then(r => r.json()).then(setData); };
+  useEffect(() => { load(); }, [filter]);
+
+  const docs = filter ? (Array.isArray(data) ? data : []) : (data?.docs || []);
+  const stats = data?.stats || {};
+
+  const create = async () => {
+    await fetch("/api/documents", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, created_by: user?.id }) });
+    setShowForm(false); setForm({ title: "", title_ar: "", doc_type: "general", category: "general", case_id: "", content: "" }); load();
+  };
+
+  return (
+    <AppShell><div className="min-h-[100dvh] bg-transparent">
+      <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
+          <div className="px-6 flex items-center justify-between h-14">
+            <h1 className="text-lg font-bold text-slate-900">Documents</h1>
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>New</button>
+        </div>
+      </header>
+      <main className="p-3 md:p-6 max-w-6xl mx-auto space-y-3">
+        {!filter && <div className="grid grid-cols-3 gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-blue-400"><p className="text-xl font-bold text-blue-600">{stats.total || 0}</p><p className="text-[10px] text-slate-400">Total Docs</p></div>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-violet-400"><p className="text-xl font-bold text-violet-600">{stats.categories || 0}</p><p className="text-[10px] text-slate-400">Categories</p></div>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-emerald-400"><p className="text-xl font-bold text-emerald-600">{stats.cases || 0}</p><p className="text-[10px] text-slate-400">Linked Cases</p></div>
+        </div>}
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+          <button onClick={() => setFilter("")} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${!filter ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100"}`}>All</button>
+          {CATEGORIES.map(c => <button key={c} onClick={() => setFilter(c)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap capitalize ${filter === c ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100"}`}>{c.replace("_", " ")}</button>)}
+        </div>
+        <div className="space-y-2">
+          {docs.map((d: any) => (
+            <div key={d.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 hover:shadow-md transition-all">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono text-slate-400">{d.ref}</span>
+                <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${CAT_COLORS[d.category] || CAT_COLORS.general}`}>{d.category}</span>
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-medium bg-slate-100 text-slate-500">{d.doc_type}</span>
+                {d.status && <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${d.status === "final" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>{d.status}</span>}
+              </div>
+              <p className="text-sm font-semibold text-slate-900">{d.title}</p>
+              <div className="flex gap-3 mt-1 text-[10px] text-slate-400">
+                {d.case_ref && <span>Case: {d.case_ref}</span>}
+                {d.created_by_name && <span>{d.created_by_name}</span>}
+                <span>{d.created_at}</span>
+              </div>
+            </div>
+          ))}
+          {docs.length === 0 && <div className="text-center text-xs text-slate-400 py-12">No documents found</div>}
+        </div>
+      </main>
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center z-50" onClick={() => setShowForm(false)}>
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md p-5 space-y-3 max-h-[90dvh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-slate-900">New Document</h3>
+            <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Title *" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
+            <input value={form.title_ar} onChange={e => setForm(p => ({ ...p, title_ar: e.target.value }))} placeholder="العنوان بالعربية" dir="rtl" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
+            <div className="grid grid-cols-2 gap-2">
+              <select value={form.doc_type} onChange={e => setForm(p => ({ ...p, doc_type: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">{DOC_TYPES.map(t => <option key={t} value={t}>{t.replace("_", " ")}</option>)}</select>
+              <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">{CATEGORIES.map(c => <option key={c} value={c}>{c.replace("_", " ")}</option>)}</select>
+              <select value={form.case_id} onChange={e => setForm(p => ({ ...p, case_id: e.target.value }))} className="col-span-2 px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"><option value="">Link to case (optional)</option>{cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref} — {c.title?.slice(0, 30)}</option>)}</select>
+            </div>
+            <textarea value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} placeholder="Content / notes" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={3} />
+            <div className="flex gap-2"><button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button><button onClick={create} disabled={!form.title} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">Create</button></div>
+          </div>
+        </div>
+      )}
+    </div></AppShell>
+  );
+}
