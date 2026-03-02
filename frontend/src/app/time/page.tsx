@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import AppShell from "@/components/AppShell";
 
 import { useState, useEffect, useRef } from "react";
@@ -18,6 +20,7 @@ const ACTIVITY_TYPES = [
 
 export default function TimePage() {
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "time" as any);
   const [entries, setEntries] = useState<any[]>([]);
   const [stats, setStats] = useState<any>({});
   const [cases, setCases] = useState<any[]>([]);

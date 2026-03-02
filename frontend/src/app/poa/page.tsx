@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
@@ -23,6 +25,7 @@ export default function POAPage() {
   const create = async () => {
     await fetch("/api/poa", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form }) });
     setShowForm(false); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "poa" }); }
   };
 
   const revoke = async (id: number) => {

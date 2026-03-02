@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
@@ -27,6 +29,7 @@ export default function ContactsPage() {
   const create = async () => {
     await fetch("/api/contacts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form }) });
     setShowForm(false); setForm({ name: "", name_ar: "", contact_type: "other", organization: "", phone: "", email: "", specialization: "", notes: "" }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "contact" }); }
   };
 
   return (

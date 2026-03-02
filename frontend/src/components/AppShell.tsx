@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useLocale, LanguageToggle } from "@/lib/LocaleContext";
+import { canRead, type Module } from "@/lib/rbac";
 
 function getNavSections(t: (k: string) => string) { return [
   {
@@ -79,12 +80,38 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const { t, isRtl } = useLocale();
   const NAV_SECTIONS = getNavSections(t);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch unread notification count
+  useEffect(() => {
+    if (!user) return;
+    const fetchCount = () => {
+      fetch(`/api/notifications?action=unread_count&userId=\${user.id}`)
+        .then(r => r.json()).then(d => setUnreadCount(d.count || 0)).catch(() => {});
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 60000); // poll every 60s
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     try { const s = localStorage.getItem("qanuni_user"); if (s) setUser(JSON.parse(s)); } catch {}
   }, []);
 
   const logout = () => { localStorage.removeItem("qanuni_user"); window.location.href = "/"; };
+
+  
+  // RBAC: map href to module for permission filtering
+  const hrefToModule: Record<string, string> = {
+    "/": "cases", "/calendar": "hearings", "/tasks": "tasks", "/notifications": "notifications",
+    "/?tab=cases": "cases", "/?tab=clients": "clients", "/documents": "documents",
+    "/poa": "poa", "/contracts": "contracts", "/filings": "filings",
+    "/time": "time", "/invoices": "invoices", "/expenses": "expenses",
+    "/trust": "trust", "/retainers": "retainers", "/zatca": "zatca",
+    "/contacts": "contacts", "/communications": "communications", "/compliance": "compliance",
+    "/reports": "reports", "/research": "cases", "/hr": "hr", "/settings": "settings",
+    "/templates": "templates", "/analytics": "reports", "/audit": "audit",
+  };
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -121,7 +148,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <div key={section.title} className="mb-4">
                 {!collapsed && <p className="px-2.5 mb-1.5 text-[9px] font-bold text-slate-300 uppercase tracking-[0.12em]">{section.title}</p>}
                 <div className="space-y-0.5">
-                  {section.items.map(item => {
+                  {section.items.filter(item => { const mod = hrefToModule[item.href]; return !mod || canRead(user?.role || "admin", mod as Module); }).map(item => {
                     const active = isActive(item.href);
                     return (
                       <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)}
@@ -143,6 +170,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Language toggle */}
+          {!collapsed && (
+            <a href="/notifications" className="flex items-center gap-2.5 mx-2.5 mb-1 px-2.5 py-2 rounded-xl text-[13px] font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors relative">
+              <svg className="w-[18px] h-[18px] text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              <span>Notifications</span>
+              {unreadCount > 0 && <span className="ml-auto px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full">{unreadCount}</span>}
+            </a>
+          )}
           {!collapsed && <div className="px-2.5 mb-1"><LanguageToggle className="w-full justify-center" /></div>}
 
           {/* Collapse toggle (desktop) */}
@@ -186,6 +220,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <span className="text-sm font-bold text-slate-900">Qanuni</span>
             </div>
+            <a href="/notifications" className="relative p-1.5 rounded-lg hover:bg-slate-100">
+              <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              {unreadCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+            </a>
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-[9px] font-bold">
               {user?.name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
             </div>

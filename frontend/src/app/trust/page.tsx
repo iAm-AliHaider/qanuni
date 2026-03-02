@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
@@ -6,6 +8,7 @@ import { useState, useEffect } from "react";
 export default function TrustPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "trust" as any);
   const [data, setData] = useState<any>(null);
   const [clients, setClients] = useState<any[]>([]);
   const [showDeposit, setShowDeposit] = useState<any>(null); // { account_id, type: 'deposit'|'withdrawal' }
@@ -27,6 +30,7 @@ export default function TrustPage() {
   const createAccount = async () => {
     await fetch("/api/trust", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create_account", ...form }) });
     setShowCreate(false); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "trust_account" }); }
   };
 
   const submitTx = async () => {

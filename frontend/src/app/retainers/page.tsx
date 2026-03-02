@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
@@ -23,6 +25,7 @@ export default function RetainersPage() {
   const create = async () => {
     await fetch("/api/retainers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, amount: parseFloat(form.amount) || 0, billing_day: parseInt(form.billing_day) || 1 }) });
     setShowForm(false); setForm({ client_id: "", agreement_type: "monthly", amount: "", start_date: "", end_date: "", billing_day: "1" }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "retainer" }); }
   };
 
   const cancel = async (id: number) => {

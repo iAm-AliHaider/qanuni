@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 const sql = neon(process.env.DATABASE_URL!);
+// Audit trail helper — call after any CRUD operation
+async function logAudit(sql: any, { user_id, user_name, action, entity_type, entity_id, entity_ref, old_value, new_value }: {
+  user_id?: number; user_name?: string; action: string; entity_type: string;
+  entity_id?: number; entity_ref?: string; old_value?: string; new_value?: string;
+}) {
+  try {
+    await sql`INSERT INTO audit_trail (user_id, user_name, action, entity_type, entity_id, entity_ref, old_value, new_value) VALUES (\${user_id||null}, \${user_name||null}, \${action}, \${entity_type}, \${entity_id||null}, \${entity_ref||null}, \${old_value||null}, \${new_value||null})`;
+  } catch {}
+}
+
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

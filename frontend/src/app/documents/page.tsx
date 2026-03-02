@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
@@ -11,6 +13,7 @@ const CAT_COLORS: Record<string, string> = { pleadings: "bg-blue-100 text-blue-7
 export default function DocumentsPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "documents" as any);
   const [data, setData] = useState<any>(null);
   const [filter, setFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -50,6 +53,7 @@ export default function DocumentsPage() {
   const create = async () => {
     await fetch("/api/documents", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, file_url: uploadedUrl || null, created_by: user?.id }) });
     setShowForm(false); setForm({ title: "", title_ar: "", doc_type: "general", category: "general", case_id: "", content: "" }); setUploadedUrl(""); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "document" }); }
   };
 
   return (

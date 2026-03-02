@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
@@ -10,6 +12,7 @@ const FILING_TYPES = ["statement_of_claim", "defense", "evidence", "petition", "
 export default function FilingsPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "filings" as any);
   const [data, setData] = useState<any>(null);
   const [cases, setCases] = useState<any[]>([]);
   const [courts, setCourts] = useState<any[]>([]);
@@ -31,6 +34,7 @@ export default function FilingsPage() {
   const create = async () => {
     await fetch("/api/filings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, filed_by: user?.id }) });
     setShowForm(false); setForm({ case_id: "", filing_type: "statement_of_claim", title: "", court_id: "", najiz_ref: "", deadline_date: "", notes: "", response_required: false, response_deadline: "" }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "filing" }); }
   };
 
   const markFiled = async (id: number) => {

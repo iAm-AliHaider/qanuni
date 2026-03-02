@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
@@ -8,6 +10,7 @@ const CAT_COLORS: Record<string, string> = { filing_fees: "bg-blue-100 text-blue
 export default function ExpensesPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "expenses" as any);
   const [data, setData] = useState<any>(null);
   const [cases, setCases] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -26,6 +29,7 @@ export default function ExpensesPage() {
   const create = async () => {
     await fetch("/api/expenses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, amount: parseFloat(form.amount), user_id: user?.id }) });
     setShowForm(false); setForm({ case_id: "", category: "general", description: "", amount: "", expense_date: new Date().toISOString().slice(0, 10), is_billable: true }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "expense" }); }
   };
 
   const approve = async (id: number) => { await fetch("/api/expenses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "approve", id, approved_by: user?.id }) }); load(); };

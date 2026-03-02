@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import AppShell from "@/components/AppShell";
+import { formatDualDate } from "@/lib/hijri";
+import { logAction, getAuditUser } from "@/lib/audit";
 import { useLocale, LanguageToggle } from "@/lib/LocaleContext";
 
 // ═══════════════════════════════════════════════════════════════
@@ -206,7 +208,7 @@ function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-[11px] text-slate-300 font-medium">{t("footer.firm_name")}</p>
-          <p className="text-[9px] text-slate-200 mt-1">Powered by Qanuni</p>
+          <p className="text-[9px] text-slate-200 mt-1">Powered by Qanuni</p><a href="/portal" className="text-[10px] text-emerald-500 hover:text-emerald-700 underline">Client Portal — بوابة العملاء</a><p className="hidden"></p>
           <div className="mt-3 flex justify-center"><LanguageToggle /></div>
         </div>
       </div>
@@ -389,7 +391,7 @@ function CaseDetail({
                     <p className="text-[10px] text-slate-400">{h.court_name} {h.judge_name ? `· ${h.judge_name}` : ""}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-blue-600">{h.hearing_date}</p>
+                    <p className="text-xs font-bold text-blue-600">{h.hearing_date}{h.hearing_date && <span className="text-[9px] text-slate-300 ml-1">({formatDualDate(h.hearing_date).split("(")[1]}</span>}</p>
                     <p className="text-[10px] text-slate-400">{h.hearing_time}</p>
                     <Badge text={h.status} colors={STATUS_COLORS[h.status]} />
                   </div>

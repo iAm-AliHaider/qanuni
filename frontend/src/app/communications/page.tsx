@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
@@ -8,6 +10,7 @@ const TYPE_ICONS: Record<string, string> = { call: "bg-blue-100 text-blue-700", 
 export default function CommunicationsPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "communications" as any);
   const [comms, setComms] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [cases, setCases] = useState<any[]>([]);
@@ -26,6 +29,7 @@ export default function CommunicationsPage() {
   const create = async () => {
     await fetch("/api/communications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, user_id: user?.id }) });
     setShowForm(false); setForm({ client_id: "", case_id: "", comm_type: "call", subject: "", body: "", direction: "outbound" }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "communication" }); }
   };
 
   return (

@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import AppShell from "@/components/AppShell";
 
 import { useState, useEffect } from "react";
@@ -11,6 +13,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function InvoicesPage() {
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "invoices" as any);
   const [data, setData] = useState<any>(null);
   const [clients, setClients] = useState<any[]>([]);
   const [cases, setCases] = useState<any[]>([]);
@@ -196,7 +199,7 @@ export default function InvoicesPage() {
                     <td className="px-4 py-2.5 font-mono font-medium text-slate-800">{inv.ref}</td>
                     <td className="px-4 py-2.5 text-slate-700">{inv.client_name}</td>
                     <td className="px-4 py-2.5 text-slate-500 font-mono text-[10px]">{inv.case_ref}</td>
-                    <td className="px-4 py-2.5 text-slate-500">{inv.invoice_date}</td>
+                    <td className="px-4 py-2.5 text-slate-500">{inv.invoice_date}<span className="text-[9px] text-slate-300 ml-1">({(() => { try { return new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {month:"short",day:"numeric"}).format(new Date(inv.invoice_date)); } catch { return ""; }})()})</span></td>
                     <td className="px-4 py-2.5">
                       <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${STATUS_COLORS[inv.payment_status] || "bg-gray-100 text-gray-500"}`}>{inv.payment_status}</span>
                     </td>

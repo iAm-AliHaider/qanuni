@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
@@ -11,6 +13,7 @@ const COLS = ["todo", "in_progress", "completed"];
 export default function TasksPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "tasks" as any);
   const [tasks, setTasks] = useState<any[]>([]);
   const [cases, setCases] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -29,11 +32,13 @@ export default function TasksPage() {
   const updateStatus = async (id: number, status: string) => {
     await fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "update_status", id, status }) });
     load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "update", entityType: "task" }); }
   };
 
   const create = async () => {
     await fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, assigned_by: user?.id }) });
     setShowForm(false); setForm({ title: "", case_id: "", priority: "medium", due_date: "", assigned_to: "", description: "", category: "general" }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "task" }); }
   };
 
   return (

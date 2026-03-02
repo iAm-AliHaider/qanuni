@@ -1,4 +1,6 @@
 "use client";
+import { logAction, getAuditUser } from "@/lib/audit";
+import { canWrite } from "@/lib/rbac";
 import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
@@ -9,6 +11,7 @@ const STATUS_COLORS: Record<string, string> = { draft: "bg-gray-100 text-gray-60
 export default function ContractsPage() {
   const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
+  const userCanWrite = canWrite(user?.role || "admin", "contracts" as any);
   const [data, setData] = useState<any>(null);
   const [clients, setClients] = useState<any[]>([]);
   const [cases, setCases] = useState<any[]>([]);
@@ -29,6 +32,7 @@ export default function ContractsPage() {
   const create = async () => {
     await fetch("/api/contracts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, value: parseFloat(form.value) || 0, created_by: user?.id }) });
     setShowForm(false); setForm({ title: "", title_ar: "", contract_type: "service", client_id: "", case_id: "", start_date: "", end_date: "", value: "", terms: "", obligations: "", renewal_type: "none" }); load();
+    { const u = getAuditUser(); logAction({ userId: u.id, userName: u.name, action: "create", entityType: "contract" }); }
   };
 
   const sign = async (id: number, party: string) => {
