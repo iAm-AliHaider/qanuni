@@ -14,6 +14,8 @@ export default function DocumentsPage() {
   const [showForm, setShowForm] = useState(false);
   const [cases, setCases] = useState<any[]>([]);
   const [form, setForm] = useState({ title: "", title_ar: "", doc_type: "general", category: "general", case_id: "", content: "" });
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState("");
 
   useEffect(() => {
     try { const s = localStorage.getItem("qanuni_user"); if (s) setUser(JSON.parse(s)); } catch {}
@@ -26,9 +28,26 @@ export default function DocumentsPage() {
   const docs = filter ? (Array.isArray(data) ? data : []) : (data?.docs || []);
   const stats = data?.stats || {};
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) {
+        setUploadedUrl(data.url);
+        if (!form.title) setForm(p => ({ ...p, title: file.name.replace(/\.[^.]+$/, "") }));
+      }
+    } catch (err) { console.error(err); }
+    setUploading(false);
+  };
+
   const create = async () => {
-    await fetch("/api/documents", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, created_by: user?.id }) });
-    setShowForm(false); setForm({ title: "", title_ar: "", doc_type: "general", category: "general", case_id: "", content: "" }); load();
+    await fetch("/api/documents", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...form, file_url: uploadedUrl || null, created_by: user?.id }) });
+    setShowForm(false); setForm({ title: "", title_ar: "", doc_type: "general", category: "general", case_id: "", content: "" }); setUploadedUrl(""); load();
   };
 
   return (
@@ -63,6 +82,7 @@ export default function DocumentsPage() {
                 {d.case_ref && <span>Case: {d.case_ref}</span>}
                 {d.created_by_name && <span>{d.created_by_name}</span>}
                 <span>{d.created_at}</span>
+                {d.file_url && <a href={d.file_url} target="_blank" rel="noopener" className="text-emerald-600 font-medium hover:underline">Download</a>}
               </div>
             </div>
           ))}
@@ -80,6 +100,32 @@ export default function DocumentsPage() {
               <select value={form.doc_type} onChange={e => setForm(p => ({ ...p, doc_type: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">{DOC_TYPES.map(t => <option key={t} value={t}>{t.replace("_", " ")}</option>)}</select>
               <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">{CATEGORIES.map(c => <option key={c} value={c}>{c.replace("_", " ")}</option>)}</select>
               <select value={form.case_id} onChange={e => setForm(p => ({ ...p, case_id: e.target.value }))} className="col-span-2 px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"><option value="">Link to case (optional)</option>{cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref} — {c.title?.slice(0, 30)}</option>)}</select>
+            </div>
+            
+            {/* File upload */}
+            <div className={`border-2 border-dashed rounded-xl p-4 text-center transition-all ${uploadedUrl ? "border-emerald-300 bg-emerald-50/50" : "border-slate-200 hover:border-slate-300"}`}>
+              {uploadedUrl ? (
+                <div className="flex items-center gap-2 justify-center">
+                  <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span className="text-xs text-emerald-700 font-medium">File uploaded</span>
+                  <a href={uploadedUrl} target="_blank" rel="noopener" className="text-xs text-emerald-600 underline">View</a>
+                  <button onClick={() => setUploadedUrl("")} className="text-xs text-red-500 ml-2">Remove</button>
+                </div>
+              ) : uploading ? (
+                <div className="flex items-center gap-2 justify-center">
+                  <div className="w-4 h-4 rounded-full border-2 border-slate-200 border-t-emerald-500 animate-spin" />
+                  <span className="text-xs text-slate-500">Uploading...</span>
+                </div>
+              ) : (
+                <label className="cursor-pointer">
+                  <input type="file" className="hidden" onChange={handleFileUpload} accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png,.txt" />
+                  <div className="flex flex-col items-center gap-1">
+                    <svg className="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                    <span className="text-xs text-slate-500 font-medium">Click to upload file</span>
+                    <span className="text-[9px] text-slate-400">PDF, DOC, XLS, JPG, PNG (max 4.5MB)</span>
+                  </div>
+                </label>
+              )}
             </div>
             <textarea value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} placeholder="Content / notes" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={3} />
             <div className="flex gap-2"><button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button><button onClick={create} disabled={!form.title} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">Create</button></div>

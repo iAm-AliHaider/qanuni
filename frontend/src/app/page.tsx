@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import AppShell from "@/components/AppShell";
+import { useLocale, LanguageToggle } from "@/lib/LocaleContext";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -92,6 +93,7 @@ const TextArea = ({ label, ...props }: any) => (
 // LOGIN PAGE
 // ═══════════════════════════════════════════════════════════════
 function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
+  const { t, locale } = useLocale();
   const [users, setUsers] = useState<any[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [pin, setPin] = useState(["", "", "", ""]);
@@ -162,17 +164,17 @@ function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
         <div className="bg-white rounded-3xl border border-slate-200/60 shadow-2xl shadow-slate-200/40 p-7 space-y-5">
           {/* User select */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-500 mb-2 block uppercase tracking-wider">Select User</label>
+            <label className="text-[11px] font-semibold text-slate-500 mb-2 block uppercase tracking-wider">{t('common.select_user')}</label>
             <select value={selectedId} onChange={e => { setSelectedId(e.target.value); setError(""); }}
               className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 text-sm text-slate-700 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300 outline-none transition-all">
-              <option value="">Choose your account...</option>
+              <option value="">{t("common.choose_account")}</option>
               {users.map((u: any) => <option key={u.id} value={u.id}>{u.name} — {ROLE_LABELS[u.role] || u.role}</option>)}
             </select>
           </div>
 
           {/* PIN dots */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-500 mb-3 block uppercase tracking-wider">Enter PIN</label>
+            <label className="text-[11px] font-semibold text-slate-500 mb-3 block uppercase tracking-wider">{t('common.enter_pin')}</label>
             <div className="flex justify-center gap-3">
               {pin.map((digit, i) => (
                 <input key={i} id={"pin-" + i} type="password" inputMode="numeric" maxLength={1}
@@ -189,22 +191,23 @@ function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
           {error && (
             <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-50 border border-red-100 animate-scale-in">
               <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10" /><path d="M12 8v4m0 4h.01" /></svg>
-              <p className="text-xs font-medium text-red-600">{error}</p>
+              <p className="text-xs font-medium text-red-600">{error === "Invalid PIN" ? t("common.invalid_pin") : error}</p>
             </div>
           )}
 
           {/* Submit */}
           <button onClick={handleLogin} disabled={!selectedId || pinValue.length < 4 || loading}
             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 text-white text-sm font-bold hover:shadow-xl hover:shadow-slate-900/15 disabled:opacity-30 disabled:hover:shadow-none transition-all duration-300 relative overflow-hidden group">
-            <span className="relative z-10">{loading ? "Signing in..." : "Sign In"}</span>
+            <span className="relative z-10">{loading ? t("common.signing_in") : t("common.sign_in")}</span>
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
         </div>
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-[11px] text-slate-300 font-medium">Al-Rashid & Partners Law Firm</p>
+          <p className="text-[11px] text-slate-300 font-medium">{t("footer.firm_name")}</p>
           <p className="text-[9px] text-slate-200 mt-1">Powered by Qanuni</p>
+          <div className="mt-3 flex justify-center"><LanguageToggle /></div>
         </div>
       </div>
     </div>

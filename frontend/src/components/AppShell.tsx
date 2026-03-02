@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useLocale, LanguageToggle } from "@/lib/LocaleContext";
 
 const NAV_SECTIONS = [
   {
@@ -71,6 +72,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const { t, isRtl } = useLocale();
 
   useEffect(() => {
     try { const s = localStorage.getItem("qanuni_user"); if (s) setUser(JSON.parse(s)); } catch {}
@@ -95,8 +97,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full z-50 bg-white border-r border-slate-200/80 transition-all duration-300 ease-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
+      <aside className={`fixed top-0 h-full z-50 ${isRtl ? "right-0" : "left-0"} bg-white ${isRtl ? "border-l" : "border-r"} border-slate-200/80 transition-all duration-300 ease-out
+        ${sidebarOpen ? "translate-x-0" : (isRtl ? "translate-x-full" : "-translate-x-full")} md:translate-x-0
         ${collapsed ? "md:w-[68px]" : "md:w-[260px]"}`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -134,6 +136,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
+          {/* Language toggle */}
+          {!collapsed && <div className="px-2.5 mb-1"><LanguageToggle className="w-full justify-center" /></div>}
+
           {/* Collapse toggle (desktop) */}
           <button onClick={() => setCollapsed(!collapsed)} className="hidden md:flex items-center justify-center py-2 mx-2.5 mb-1 rounded-lg hover:bg-slate-50 text-slate-400">
             <svg className={`w-4 h-4 transition-transform ${collapsed ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M11 19l-7-7 7-7" /></svg>
@@ -162,7 +167,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <div className={`transition-all duration-300 ${collapsed ? "md:ml-[68px]" : "md:ml-[260px]"}`}>
+      <div className={`transition-all duration-300 ${collapsed ? (isRtl ? "md:mr-[68px]" : "md:ml-[68px]") : (isRtl ? "md:mr-[260px]" : "md:ml-[260px]")}`}>
         {/* Mobile header */}
         <header className="sticky top-0 z-30 bg-white/80 glass border-b border-slate-200/60 md:hidden">
           <div className="flex items-center justify-between h-14 px-4">
