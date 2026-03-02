@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === "revenue_by_lawyer") {
-      const rows = await sql`SELECT u.name, SUM(te.hours * te.rate) as revenue, SUM(te.hours) as hours FROM time_entries te JOIN users u ON te.user_id = u.id WHERE te.is_billable = true GROUP BY u.name ORDER BY revenue DESC`;
+      const rows = await sql`SELECT u.name, SUM(te.hours * te.rate) as revenue, SUM(te.hours) as hours FROM time_entries te JOIN users u ON te.user_id = u.id WHERE (te.is_billable::text = 'true' OR te.is_billable::text = '1') GROUP BY u.name ORDER BY revenue DESC`;
       return NextResponse.json({ data: rows });
     }
 
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     if (type === "utilization") {
       const rows = await sql`SELECT u.name, u.role, 
-        COALESCE(SUM(CASE WHEN te.is_billable THEN te.hours ELSE 0 END), 0) as billable_hours,
+        COALESCE(SUM(CASE WHEN (te.is_billable::text = 'true' OR te.is_billable::text = '1') THEN te.hours ELSE 0 END), 0) as billable_hours,
         COALESCE(SUM(te.hours), 0) as total_hours
         FROM users u LEFT JOIN time_entries te ON u.id = te.user_id
         WHERE u.role IN ('partner','senior_partner','managing_partner','senior_associate','associate')
@@ -45,23 +45,23 @@ export async function GET(request: NextRequest) {
     if (type === "deadline_countdown") {
       const rows = await sql`SELECT 'hearing' as type, h.hearing_date as due_date, c.title as case_title, c.ref as case_ref
         FROM hearings h JOIN cases c ON h.case_id = c.id
-        WHERE h.hearing_date >= CURRENT_DATE AND h.hearing_date <= CURRENT_DATE + INTERVAL '30 days'
+        WHERE h.hearing_date::date >= CURRENT_DATE AND h.hearing_date::date <= CURRENT_DATE + INTERVAL '30 days'
         UNION ALL
         SELECT 'filing' as type, f.deadline_date, c.title, c.ref
         FROM court_filings f JOIN cases c ON f.case_id = c.id
-        WHERE f.deadline_date >= CURRENT_DATE AND f.deadline_date <= CURRENT_DATE + INTERVAL '30 days' AND f.status != 'filed'
+        WHERE f.deadline_date::date >= CURRENT_DATE AND f.deadline_date::date <= CURRENT_DATE + INTERVAL '30 days' AND f.status != 'filed'
         UNION ALL
         SELECT 'task' as type, t.due_date, t.title, NULL
-        FROM tasks t WHERE t.due_date >= CURRENT_DATE AND t.due_date <= CURRENT_DATE + INTERVAL '30 days' AND t.status != 'done'
+        FROM tasks t WHERE t.due_date::date >= CURRENT_DATE AND t.due_date::date <= CURRENT_DATE + INTERVAL '30 days' AND t.status != 'done'
         ORDER BY due_date ASC LIMIT 20`;
       return NextResponse.json({ data: rows });
     }
 
     // Overview KPIs
     const [cases] = await sql`SELECT COUNT(*) as total, COUNT(*) FILTER (WHERE status = 'active') as active FROM cases`;
-    const [invoices] = await sql`SELECT COALESCE(SUM(total::numeric), 0) as total_revenue, COALESCE(SUM(total::numeric) FILTER (WHERE payment_status = 'paid'), 0) as collected FROM invoices`;
-    const [time] = await sql`SELECT COALESCE(SUM(hours), 0) as total_hours, COALESCE(SUM(hours) FILTER (WHERE is_billable), 0) as billable_hours FROM time_entries`;
-    const [clients] = await sql`SELECT COUNT(*) as total FROM clients WHERE is_active = 1`;
+    const [invoices] = await sql`SELECT COALESCE(SUM(total::numeric), 0) as total_revenue, COALESCE(SUM(total::numeric) FILTER (WHERE payment_status::text = 'paid'), 0) as collected FROM invoices`;
+    const [time] = await sql`SELECT COALESCE(SUM(hours), 0) as total_hours, COALESCE(SUM(hours) FILTER (WHERE is_billable::text = 'true' OR is_billable::text = '1'), 0) as billable_hours FROM time_entries`;
+    const [clients] = await sql`SELECT COUNT(*) as total FROM clients WHERE is_active::int = 1`;
 
     return NextResponse.json({
       cases: { total: cases.total, active: cases.active },

@@ -34,14 +34,14 @@ export async function GET(request: NextRequest) {
     }
 
     if (action === "hearings") {
-      const hearings = await sql`SELECT h.id, h.hearing_date, h.hearing_time, h.hearing_type, h.location, h.status, c.title as case_title FROM hearings h JOIN cases c ON h.case_id = c.id WHERE c.client_id = ${clientId} AND h.hearing_date >= CURRENT_DATE ORDER BY h.hearing_date ASC`;
+      const hearings = await sql`SELECT h.id, h.hearing_date, h.hearing_time, h.hearing_type, h.location, h.status, c.title as case_title FROM hearings h JOIN cases c ON h.case_id = c.id WHERE c.client_id = ${clientId} AND h.hearing_date::date >= CURRENT_DATE ORDER BY h.hearing_date ASC`;
       return NextResponse.json({ hearings });
     }
 
     // Overview
     const [caseCount] = await sql`SELECT COUNT(*) as total, COUNT(*) FILTER (WHERE status = 'active') as active FROM cases WHERE client_id = ${clientId}`;
     const [invTotal] = await sql`SELECT COALESCE(SUM(total::numeric), 0) as total, COALESCE(SUM(total::numeric) FILTER (WHERE payment_status = 'paid'), 0) as paid FROM invoices WHERE client_id = ${clientId}`;
-    const upcomingHearings = await sql`SELECT h.hearing_date, h.hearing_type, c.title FROM hearings h JOIN cases c ON h.case_id = c.id WHERE c.client_id = ${clientId} AND h.hearing_date >= CURRENT_DATE ORDER BY h.hearing_date LIMIT 3`;
+    const upcomingHearings = await sql`SELECT h.hearing_date, h.hearing_type, c.title FROM hearings h JOIN cases c ON h.case_id = c.id WHERE c.client_id = ${clientId} AND h.hearing_date::date >= CURRENT_DATE ORDER BY h.hearing_date LIMIT 3`;
 
     return NextResponse.json({
       client: { id: client.id, name: client.name, name_ar: client.name_ar, type: client.client_type },

@@ -2,6 +2,7 @@
 import { logAction, getAuditUser } from "@/lib/audit";
 import { canWrite } from "@/lib/rbac";
 import AppShell from "@/components/AppShell";
+import { useLocale } from "@/lib/LocaleContext";
 
 import { useState, useEffect } from "react";
 
@@ -12,6 +13,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function InvoicesPage() {
+  const { t, locale, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const userCanWrite = canWrite(user?.role || "admin", "invoices" as any);
   const [data, setData] = useState<any>(null);
@@ -87,7 +89,7 @@ export default function InvoicesPage() {
     load();
   };
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center text-sm text-slate-400">Please log in first</div>;
+  if (!user) return <div className="min-h-screen flex items-center justify-center text-sm text-slate-400">{t("common.login_required")}</div>;
 
   const invoices = data?.invoices || [];
   const stats = data?.stats || {};
@@ -145,18 +147,18 @@ export default function InvoicesPage() {
   };
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30">
         <div className="px-4 md:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
             <a href="/" className="p-2 rounded-xl hover:bg-slate-100">
               <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M15 19l-7-7 7-7" /></svg>
             </a>
-            <h1 className="text-lg font-bold text-slate-900">Invoices & Finance</h1>
+            <h1 className="text-lg font-bold text-slate-900">{t("inv.title")}</h1>
           </div>
           <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>
-            New Invoice
+            {t("inv.new_invoice")}
           </button>
         </div>
       </header>
@@ -166,23 +168,23 @@ export default function InvoicesPage() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-emerald-400">
             <p className="text-xl font-bold text-emerald-600">{Number(stats.total_invoiced || 0).toLocaleString()}</p>
-            <p className="text-[10px] text-slate-400">Total Invoiced (SAR)</p>
+            <p className="text-[10px] text-slate-400">{t("inv.total_invoiced")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-blue-400">
             <p className="text-xl font-bold text-blue-600">{Number(stats.total_paid || 0).toLocaleString()}</p>
-            <p className="text-[10px] text-slate-400">Total Collected</p>
+            <p className="text-[10px] text-slate-400">{t("inv.total_collected")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-amber-400">
             <p className="text-xl font-bold text-amber-600">{Number((stats.total_invoiced || 0) - (stats.total_paid || 0)).toLocaleString()}</p>
-            <p className="text-[10px] text-slate-400">Outstanding</p>
+            <p className="text-[10px] text-slate-400">{t("inv.outstanding")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-red-400">
             <p className="text-xl font-bold text-red-600">{Number(stats.overdue || 0).toLocaleString()}</p>
-            <p className="text-[10px] text-slate-400">Overdue</p>
+            <p className="text-[10px] text-slate-400">{t("inv.overdue")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-violet-400">
             <p className="text-xl font-bold text-violet-600">{stats.invoice_count || 0}</p>
-            <p className="text-[10px] text-slate-400">Total Invoices</p>
+            <p className="text-[10px] text-slate-400">{t("inv.total_invoices")}</p>
           </div>
         </div>
 

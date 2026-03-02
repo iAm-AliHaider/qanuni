@@ -1,5 +1,6 @@
 "use client";
 import AppShell from "@/components/AppShell";
+import { useLocale } from "@/lib/LocaleContext";
 import { useState, useEffect } from "react";
 
 const ACTION_COLORS: Record<string, string> = {
@@ -13,6 +14,7 @@ const ACTION_COLORS: Record<string, string> = {
 };
 
 export default function AuditPage() {
+  const { t, locale, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [trail, setTrail] = useState<any[]>([]);
   const [filter, setFilter] = useState("");
@@ -31,33 +33,33 @@ export default function AuditPage() {
 
   return (
     <AppShell>
-      <div className="p-4 md:p-8 space-y-6 max-w-5xl mx-auto">
+      <div className="p-4 md:p-8 space-y-6 max-w-5xl mx-auto" dir={dir}>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Audit Trail</h1>
-            <p className="text-sm text-slate-500">سجل التدقيق — Track all changes</p>
+            <h1 className="text-2xl font-bold text-slate-900">{t("audit.title")}</h1>
+            <p className="text-sm text-slate-500">{t("audit.track_changes")}</p>
           </div>
           <select value={filter} onChange={e => setFilter(e.target.value)} className="px-3 py-1.5 rounded-lg border border-slate-200 text-sm">
-            <option value="">All Types</option>
+            <option value="">{t("audit.all_types")}</option>
             {entityTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
 
-        {loading ? <div className="text-center py-10 text-slate-400">Loading...</div> : filtered.length === 0 ? (
+        {loading ? <div className="text-center py-10 text-slate-400">{t("common.loading")}</div> : filtered.length === 0 ? (
           <div className="text-center py-20 text-slate-300">
-            <p className="text-lg font-medium">No audit entries</p>
-            <p className="text-sm">Changes to cases, invoices, and documents will appear here</p>
+            <p className="text-lg font-medium">{t("audit.no_entries")}</p>
+            <p className="text-sm">{t("audit.changes_appear")}</p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead><tr className="bg-slate-50 text-slate-500 text-[10px] uppercase">
-                <th className="px-4 py-2 text-left">Time</th>
-                <th className="px-4 py-2 text-left">User</th>
-                <th className="px-4 py-2 text-center">Action</th>
-                <th className="px-4 py-2 text-left">Entity</th>
-                <th className="px-4 py-2 text-left">Ref</th>
-                <th className="px-4 py-2 text-left">Details</th>
+                <th className="px-4 py-2 text-left">{t("audit.time")}</th>
+                <th className="px-4 py-2 text-left">{t("audit.user")}</th>
+                <th className="px-4 py-2 text-center">{t("audit.action")}</th>
+                <th className="px-4 py-2 text-left">{t("audit.entity")}</th>
+                <th className="px-4 py-2 text-left">{t("audit.ref")}</th>
+                <th className="px-4 py-2 text-left">{t("audit.details")}</th>
               </tr></thead>
               <tbody>
                 {filtered.map(a => (

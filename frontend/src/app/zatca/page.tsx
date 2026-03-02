@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { FIRM_ZATCA_CONFIG, decodeZATCAQR } from "@/lib/zatca";
 
 export default function ZATCAPage() {
-  const { t } = useLocale();
+  const { t, locale, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,12 +75,12 @@ export default function ZATCAPage() {
 
   return (
     <AppShell>
-      <div className="p-4 md:p-8 space-y-6 max-w-6xl mx-auto">
+      <div className="p-4 md:p-8 space-y-6 max-w-6xl mx-auto" dir={dir}>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">ZATCA E-Invoicing</h1>
-            <p className="text-sm text-slate-500 mt-1">الفوترة الإلكترونية — هيئة الزكاة والضريبة والجمارك</p>
+            <h1 className="text-2xl font-bold text-slate-900">{t('zatca.title')}</h1>
+            <p className="text-sm text-slate-500 mt-1">{t('zatca.title')} — {t('zatca.title')}</p>
           </div>
           {pending > 0 && (
             <button
@@ -93,7 +93,7 @@ export default function ZATCAPage() {
               ) : (
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
               )}
-              Generate All ({pending})
+              {t('zatca.generate_all')} ({pending})
             </button>
           )}
         </div>
@@ -101,45 +101,44 @@ export default function ZATCAPage() {
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Invoices", labelAr: "إجمالي الفواتير", value: totalInvoices, color: "slate" },
-            { label: "ZATCA Compliant", labelAr: "متوافقة مع زاتكا", value: compliant, color: "emerald" },
-            { label: "Pending", labelAr: "معلقة", value: pending, color: "amber" },
-            { label: "Compliance Rate", labelAr: "نسبة الامتثال", value: totalInvoices ? `${Math.round(compliant / totalInvoices * 100)}%` : "—", color: "blue" },
+            { label: t('zatca.total_invoices'), value: totalInvoices, color: "slate" },
+            { label: t('zatca.zatca_compliant'), value: compliant, color: "emerald" },
+            { label: t('zatca.pending_status'), value: pending, color: "amber" },
+            { label: t('zatca.compliance_rate'), value: totalInvoices ? `${Math.round(compliant / totalInvoices * 100)}%` : "—", color: "blue" },
           ].map((kpi, i) => (
             <div key={i} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
               <p className={`text-2xl font-bold text-${kpi.color === "emerald" ? "emerald" : kpi.color === "amber" ? "amber" : kpi.color === "blue" ? "blue" : "slate"}-600`}>{kpi.value}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">{kpi.label}</p>
-              <p className="text-[10px] text-slate-300">{kpi.labelAr}</p>
             </div>
           ))}
         </div>
 
         {/* Firm Config */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Firm Configuration — إعدادات المنشأة</h3>
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">{t('zatca.firm_config')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <p className="text-slate-400 text-[10px]">Seller Name (Arabic)</p>
+              <p className="text-slate-400 text-[10px]">{t('zatca.seller_name_arabic')}</p>
               <p className="font-medium text-slate-800" dir="rtl">{firm.sellerName}</p>
             </div>
             <div>
-              <p className="text-slate-400 text-[10px]">VAT Number</p>
+              <p className="text-slate-400 text-[10px]">{t('zatca.vat_number')}</p>
               <p className="font-mono font-medium text-slate-800">{firm.vatNumber}</p>
             </div>
             <div>
-              <p className="text-slate-400 text-[10px]">CR Number</p>
+              <p className="text-slate-400 text-[10px]">{t('zatca.cr_number')}</p>
               <p className="font-mono font-medium text-slate-800">{firm.crNumber}</p>
             </div>
             <div>
-              <p className="text-slate-400 text-[10px]">Address</p>
+              <p className="text-slate-400 text-[10px]">{t('zatca.address')}</p>
               <p className="font-medium text-slate-800">{firm.address.street}, {firm.address.district}</p>
             </div>
             <div>
-              <p className="text-slate-400 text-[10px]">City</p>
+              <p className="text-slate-400 text-[10px]">{t('common.city')}</p>
               <p className="font-medium text-slate-800">{firm.address.city} ({firm.address.cityAr}) — {firm.address.postalCode}</p>
             </div>
             <div>
-              <p className="text-slate-400 text-[10px]">VAT Rate</p>
+              <p className="text-slate-400 text-[10px]">{t('zatca.vat_rate')}</p>
               <p className="font-mono font-bold text-emerald-600">{firm.vatRate * 100}%</p>
             </div>
           </div>

@@ -68,27 +68,27 @@ export default function NotificationsPage() {
       <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
-            <p className="text-sm text-slate-500">الإشعارات — {unread} unread</p>
+            <h1 className="text-2xl font-bold text-slate-900">{t('notif.title')}</h1>
+            <p className="text-sm text-slate-500">{t('notif.title')} — {unread} {t('notif.unread')}</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={checkDeadlines} className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-700 font-semibold hover:bg-blue-100">Check Deadlines</button>
-            {unread > 0 && <button onClick={() => markRead()} className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 font-semibold hover:bg-emerald-100">Mark All Read</button>}
+            <button onClick={checkDeadlines} className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-700 font-semibold hover:bg-blue-100">{t('notif.check_deadlines')}</button>
+            {unread > 0 && <button onClick={() => markRead()} className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 font-semibold hover:bg-emerald-100">{t('notif.mark_all_read')}</button>}
           </div>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
-          {(["notifications", "activity"] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${tab === t ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}>
-              {t === "notifications" ? `Notifications${unread ? ` (${unread})` : ""}` : "Activity Feed"}
+          {(["notifications", "activity"] as const).map(tabKey => (
+            <button key={tabKey} onClick={() => setTab(tabKey)} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${tab === tabKey ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}>
+              {tabKey === "notifications" ? `${t('notif.title')}${unread ? ` (${unread})` : ""}` : t('notif.activity_feed')}
             </button>
           ))}
         </div>
 
-        {loading ? <div className="text-center py-10 text-slate-400">Loading...</div> : tab === "notifications" ? (
+        {loading ? <div className="text-center py-10 text-slate-400">{t('notif.loading')}</div> : tab === "notifications" ? (
           <div className="space-y-2">
-            {notifications.length === 0 && <div className="text-center py-10 text-slate-400">No notifications — لا توجد إشعارات</div>}
+            {notifications.length === 0 && <div className="text-center py-10 text-slate-400">{t('notif.no_notifications')}</div>}
             {notifications.map(n => {
               const cfg = TYPE_CONFIG[n.type] || TYPE_CONFIG.info;
               return (
@@ -109,7 +109,7 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <div className="space-y-2">
-            {activity.length === 0 && <div className="text-center py-10 text-slate-400">No activity logged</div>}
+            {activity.length === 0 && <div className="text-center py-10 text-slate-400">{t('notif.no_activity')}</div>}
             {activity.map(a => (
               <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-100">
                 <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">{(a.user_name || "?").slice(0, 2).toUpperCase()}</div>

@@ -73,14 +73,14 @@ export default function TemplatesPage() {
     <AppShell>
       <div className="p-4 md:p-8 space-y-6 max-w-6xl mx-auto">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Document Templates</h1>
-          <p className="text-sm text-slate-500">قوالب المستندات — Generate legal documents from templates</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('tmpl.title')}</h1>
+          <p className="text-sm text-slate-500">{t('tmpl.generate_docs')}</p>
         </div>
 
         {!selected ? (
           /* Template Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {loading ? <div className="col-span-3 text-center py-10 text-slate-400">Loading...</div> :
+            {loading ? <div className="col-span-3 text-center py-10 text-slate-400">{t('common.loading')}</div> :
             (templates || []).map(tmpl => {
               const vars = JSON.parse(tmpl.variables || "[]");
               const catClass = CATEGORY_COLORS[tmpl.category] || CATEGORY_COLORS.general;
@@ -92,7 +92,7 @@ export default function TemplatesPage() {
                   </div>
                   <h3 className="font-bold text-slate-900">{tmpl.name}</h3>
                   {tmpl.name_ar && <p className="text-sm text-slate-400" dir="rtl">{tmpl.name_ar}</p>}
-                  <p className="text-[10px] text-slate-300 mt-2">{vars.length} variables</p>
+                  <p className="text-[10px] text-slate-300 mt-2">{vars.length} {t('tmpl.variables')}</p>
                 </div>
               );
             })}
@@ -101,7 +101,7 @@ export default function TemplatesPage() {
           /* Template Form + Preview */
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <button onClick={() => { setSelected(null); setPreview(null); }} className="px-3 py-1.5 rounded-lg bg-slate-100 text-sm text-slate-600 hover:bg-slate-200">← Back</button>
+              <button onClick={() => { setSelected(null); setPreview(null); }} className="px-3 py-1.5 rounded-lg bg-slate-100 text-sm text-slate-600 hover:bg-slate-200">{t('tmpl.back')}</button>
               <div>
                 <h2 className="text-lg font-bold text-slate-900">{selected.name}</h2>
                 {selected.name_ar && <p className="text-sm text-slate-400" dir="rtl">{selected.name_ar}</p>}
@@ -111,7 +111,7 @@ export default function TemplatesPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Variables Form */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-3">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fill Variables</h3>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('tmpl.fill_variables')}</h3>
                 {Object.entries(formData).map(([key, value]) => (
                   <div key={key}>
                     <label className="text-[11px] font-medium text-slate-500 capitalize">{key.replace(/_/g, " ")}</label>
@@ -123,20 +123,20 @@ export default function TemplatesPage() {
                   </div>
                 ))}
                 <div className="flex gap-2 pt-2">
-                  <button onClick={renderPreview} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors">Preview Document</button>
-                  {preview && <button onClick={printDocument} className="flex-1 py-2 rounded-xl bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors">Print / PDF</button>}
+                  <button onClick={renderPreview} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors">{t('tmpl.preview')}</button>
+                  {preview && <button onClick={printDocument} className="flex-1 py-2 rounded-xl bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors">{t('tmpl.print_pdf')}</button>}
                 </div>
               </div>
 
               {/* Preview */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Preview</h3>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">{t('tmpl.preview')}</h3>
                 {preview ? (
                   <div className="prose prose-sm max-w-none border border-slate-100 rounded-xl p-4 bg-slate-50/50" dangerouslySetInnerHTML={{ __html: preview }}/>
                 ) : (
                   <div className="text-center py-20 text-slate-300">
                     <svg className="w-12 h-12 mx-auto mb-3 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <p className="text-sm">Fill variables and click Preview</p>
+                    <p className="text-sm">{t('tmpl.fill_click_preview')}</p>
                   </div>
                 )}
               </div>

@@ -2,6 +2,7 @@
 import { logAction, getAuditUser } from "@/lib/audit";
 import { canWrite } from "@/lib/rbac";
 import AppShell from "@/components/AppShell";
+import { useLocale } from "@/lib/LocaleContext";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -19,6 +20,7 @@ const ACTIVITY_TYPES = [
 ];
 
 export default function TimePage() {
+  const { t, locale, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const userCanWrite = canWrite(user?.role || "admin", "time" as any);
   const [entries, setEntries] = useState<any[]>([]);
@@ -91,21 +93,21 @@ export default function TimePage() {
     fetch(`/api/time?userId=${user.id}`).then(r => r.json()).then(d => { setEntries(d.entries || []); setStats(d.stats || {}); });
   };
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center text-sm text-slate-400">Please log in first</div>;
+  if (!user) return <div className="min-h-screen flex items-center justify-center text-sm text-slate-400">{t("common.login_required")}</div>;
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30">
         <div className="px-4 md:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
             <a href="/" className="p-2 rounded-xl hover:bg-slate-100">
               <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M15 19l-7-7 7-7" /></svg>
             </a>
-            <h1 className="text-lg font-bold text-slate-900">Time Tracking</h1>
+            <h1 className="text-lg font-bold text-slate-900">{t("time.title")}</h1>
           </div>
           <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>
-            Log Time
+            {t("time.log_time")}
           </button>
         </div>
       </header>
@@ -118,18 +120,18 @@ export default function TimePage() {
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
                 <select value={timerCase} onChange={e => setTimerCase(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">
-                  <option value="">Select case...</option>
+                  <option value="">{t("time.select_case")}</option>
                   {cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref} — {c.title?.slice(0, 30)}</option>)}
                 </select>
-                <input value={timerDesc} onChange={e => setTimerDesc(e.target.value)} placeholder="What are you working on?" className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm" />
+                <input value={timerDesc} onChange={e => setTimerDesc(e.target.value)} placeholder={t("time.what_working")} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm" />
               </div>
               <button onClick={() => { if (timerCase) setTiming(true); }} disabled={!timerCase} className="px-8 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 disabled:opacity-40 shadow-lg shadow-emerald-500/20">
-                Start Timer
+                {t("time.start_timer")}
               </button>
             </div>
           ) : (
             <button onClick={stopTimer} className="px-8 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 shadow-lg shadow-red-500/20 animate-pulse">
-              Stop & Save
+              {t("time.stop_save")}
             </button>
           )}
         </div>
@@ -138,33 +140,33 @@ export default function TimePage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-blue-400">
             <p className="text-2xl font-bold text-blue-600">{Number(stats.total_hours || 0).toFixed(1)}h</p>
-            <p className="text-[10px] text-slate-400">Total Hours</p>
+            <p className="text-[10px] text-slate-400">{t("time.total_hours")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-emerald-400">
             <p className="text-2xl font-bold text-emerald-600">{Number(stats.billable_hours || 0).toFixed(1)}h</p>
-            <p className="text-[10px] text-slate-400">Billable Hours</p>
+            <p className="text-[10px] text-slate-400">{t("time.billable_hours")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-amber-400">
             <p className="text-2xl font-bold text-amber-600">{stats.total_hours > 0 ? Math.round((stats.billable_hours / stats.total_hours) * 100) : 0}%</p>
-            <p className="text-[10px] text-slate-400">Utilization</p>
+            <p className="text-[10px] text-slate-400">{t("time.utilization")}</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 border-l-4 border-l-violet-400">
             <p className="text-2xl font-bold text-violet-600">{Number(stats.total_amount || 0).toLocaleString()}</p>
-            <p className="text-[10px] text-slate-400">Revenue (SAR)</p>
+            <p className="text-[10px] text-slate-400">{t("time.revenue")}</p>
           </div>
         </div>
 
         {/* Entries */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Recent Entries</h3></div>
-          {entries.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">No time entries yet</div> :
+          <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">{t("time.recent_entries")}</h3></div>
+          {entries.length === 0 ? <div className="p-6 text-center text-xs text-slate-400">{t("time.no_entries")}</div> :
             <div className="divide-y divide-slate-50">
               {entries.map((te: any) => (
                 <div key={te.id} className="px-4 py-3 flex items-center justify-between hover:bg-slate-50/50">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-[10px] font-mono text-slate-400">{te.case_ref}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${te.is_billable ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>{te.is_billable ? "Billable" : "Non-Bill"}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${te.is_billable ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>{te.is_billable ? t("time.billable") : t("time.non_bill")}</span>
                       <span className="px-1.5 py-0.5 rounded text-[8px] font-medium bg-slate-100 text-slate-500">{te.activity_type}</span>
                     </div>
                     <p className="text-xs text-slate-700">{te.description || te.case_title}</p>
@@ -188,43 +190,43 @@ export default function TimePage() {
         {showForm && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
-              <h3 className="text-lg font-bold text-slate-900">Log Time Entry</h3>
+              <h3 className="text-lg font-bold text-slate-900">{t("time.log_time_entry")}</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">Case *</label>
+                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.case")} *</label>
                   <select value={form.case_id} onChange={e => setForm(p => ({ ...p, case_id: e.target.value }))} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">
-                    <option value="">Select case...</option>
+                    <option value="">{t("time.select_case")}</option>
                     {cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref} — {c.title?.slice(0, 40)}</option>)}
                   </select>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-medium text-slate-500 mb-1 block">Hours *</label>
+                    <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.hours")} *</label>
                     <input type="number" step="0.25" min="0.25" value={form.hours} onChange={e => setForm(p => ({ ...p, hours: e.target.value }))} placeholder="1.5" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-medium text-slate-500 mb-1 block">Date</label>
+                    <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.date")}</label>
                     <input type="date" value={form.entry_date} onChange={e => setForm(p => ({ ...p, entry_date: e.target.value }))} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">Activity Type</label>
+                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.activity_type")}</label>
                   <select value={form.activity_type} onChange={e => setForm(p => ({ ...p, activity_type: e.target.value }))} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">
                     {ACTIVITY_TYPES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">Description</label>
+                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.description")}</label>
                   <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="What did you work on?" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={2} />
                 </div>
                 <label className="flex items-center gap-2">
                   <input type="checkbox" checked={form.is_billable} onChange={e => setForm(p => ({ ...p, is_billable: e.target.checked }))} className="rounded border-slate-300" />
-                  <span className="text-xs text-slate-600">Billable</span>
+                  <span className="text-xs text-slate-600">{t("time.billable")}</span>
                 </label>
               </div>
               <div className="flex gap-2 pt-2">
-                <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button>
-                <button onClick={submitEntry} disabled={!form.case_id || !form.hours} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">Save Entry</button>
+                <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">{t("common.cancel")}</button>
+                <button onClick={submitEntry} disabled={!form.case_id || !form.hours} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">{t("time.save_entry")}</button>
               </div>
             </div>
           </div>

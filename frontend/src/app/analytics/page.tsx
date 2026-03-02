@@ -4,7 +4,7 @@ import { useLocale } from "@/lib/LocaleContext";
 import { useState, useEffect } from "react";
 
 export default function AnalyticsPage() {
-  const { t } = useLocale();
+  const { t, locale, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
   const [pipeline, setPipeline] = useState<any[]>([]);
@@ -45,21 +45,21 @@ export default function AnalyticsPage() {
 
   return (
     <AppShell>
-      <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto" dir={dir}>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Analytics Dashboard</h1>
-          <p className="text-sm text-slate-500">لوحة التحليلات — Firm performance at a glance</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('analytics.title')}</h1>
+          <p className="text-sm text-slate-500">{t('analytics.firm_performance')}</p>
         </div>
 
         {/* Top KPIs */}
         {overview && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
-              { label: "Total Cases", value: overview.cases?.total || 0, sub: `${overview.cases?.active || 0} active` },
-              { label: "Revenue (SAR)", value: Number(overview.revenue?.total || 0).toLocaleString(), sub: `${Number(overview.revenue?.collected || 0).toLocaleString()} collected` },
-              { label: "Active Clients", value: overview.clients?.total || 0, sub: "" },
-              { label: "Billable Hours", value: Number(overview.time?.billable || 0).toFixed(1), sub: `of ${Number(overview.time?.total || 0).toFixed(1)} total` },
-              { label: "Utilization", value: `${overview.time?.utilization || 0}%`, sub: "billable / total" },
+              { label: t('analytics.total_cases'), value: overview.cases?.total || 0, sub: `${overview.cases?.active || 0} ${t('analytics.active')}` },
+              { label: t('analytics.revenue_sar'), value: Number(overview.revenue?.total || 0).toLocaleString(), sub: `${Number(overview.revenue?.collected || 0).toLocaleString()} ${t('analytics.collected').toLowerCase()}` },
+              { label: t('analytics.active_clients'), value: overview.clients?.total || 0, sub: "" },
+              { label: t('analytics.billable_hours'), value: Number(overview.time?.billable || 0).toFixed(1), sub: `${t('analytics.billable_of_total')} ${Number(overview.time?.total || 0).toFixed(1)} ${t('analytics.total')}` },
+              { label: t('analytics.utilization'), value: `${overview.time?.utilization || 0}%`, sub: t('analytics.billable_of_total') },
             ].map((kpi, i) => (
               <div key={i} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
                 <p className="text-xl font-bold text-slate-800">{kpi.value}</p>
@@ -73,7 +73,7 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Case Pipeline */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Case Pipeline — خط القضايا</h3>
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{t('analytics.case_pipeline')}</h3>
             {/* Funnel bar */}
             <div className="flex rounded-xl overflow-hidden h-8 mb-4">
               {pipeline.map((p, i) => (
@@ -94,20 +94,20 @@ export default function AnalyticsPage() {
 
           {/* Deadline Countdown */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Upcoming Deadlines — المواعيد النهائية</h3>
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">{t('analytics.deadline_countdown')}</h3>
             <div className="space-y-2 max-h-[200px] overflow-y-auto">
-              {deadlines.length === 0 && <p className="text-sm text-slate-300 text-center py-4">No upcoming deadlines</p>}
+              {deadlines.length === 0 && <p className="text-sm text-slate-300 text-center py-4">{t('analytics.no_deadlines')}</p>}
               {deadlines.map((d, i) => {
                 const daysLeft = Math.ceil((new Date(d.due_date).getTime() - Date.now()) / 86400000);
                 const urgent = daysLeft <= 3;
                 return (
                   <div key={i} className={`flex items-center justify-between py-2 px-3 rounded-lg ${urgent ? "bg-red-50" : "bg-slate-50"}`}>
                     <div className="flex items-center gap-2">
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${d.type === "hearing" ? "bg-blue-100 text-blue-700" : d.type === "filing" ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-600"}`}>{d.type}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${d.type === "hearing" ? "bg-blue-100 text-blue-700" : d.type === "filing" ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-600"}`}>{d.type === "hearing" ? t('analytics.hearing') : d.type === "filing" ? t('analytics.filing') : d.type}</span>
                       <span className="text-sm text-slate-700 truncate max-w-[180px]">{d.case_title}</span>
                     </div>
-                    <div className="text-right">
-                      <span className={`text-sm font-mono font-bold ${urgent ? "text-red-600" : "text-slate-600"}`}>{daysLeft}d</span>
+                      <div className="text-right">
+                      <span className={`text-sm font-mono font-bold ${urgent ? "text-red-600" : "text-slate-600"}`}>{daysLeft}{t('analytics.days_left')}</span>
                       <p className="text-[9px] text-slate-400">{d.due_date}</p>
                     </div>
                   </div>
@@ -118,45 +118,45 @@ export default function AnalyticsPage() {
 
           {/* Revenue by Lawyer */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Revenue by Lawyer — الإيرادات حسب المحامي</h3>
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{t('analytics.revenue_lawyer')}</h3>
             <div className="space-y-3">
               {revLawyer.map((r, i) => (
                 <div key={i}>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-slate-700 font-medium">{r.name}</span>
-                    <span className="text-slate-500">SAR {Number(r.revenue || 0).toLocaleString()} ({Number(r.hours || 0).toFixed(1)}h)</span>
+                    <span className="text-slate-500">SAR {Number(r.revenue || 0).toLocaleString()} ({Number(r.hours || 0).toFixed(1)}{t('analytics.hours_abbr')})</span>
                   </div>
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full bg-emerald-400 rounded-full transition-all" style={{ width: `${(Number(r.revenue || 0) / maxRevLawyer) * 100}%` }}/>
                   </div>
                 </div>
               ))}
-              {revLawyer.length === 0 && <p className="text-sm text-slate-300 text-center py-4">No billable time logged</p>}
+              {revLawyer.length === 0 && <p className="text-sm text-slate-300 text-center py-4">{t('analytics.no_billable')}</p>}
             </div>
           </div>
 
           {/* Revenue by Client */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Revenue by Client — الإيرادات حسب العميل</h3>
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{t('analytics.revenue_client')}</h3>
             <div className="space-y-3">
               {revClient.map((r, i) => (
                 <div key={i}>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-slate-700 font-medium">{r.name}</span>
-                    <span className="text-slate-500">SAR {Number(r.revenue || 0).toLocaleString()} ({r.invoices} inv)</span>
+                    <span className="text-slate-500">SAR {Number(r.revenue || 0).toLocaleString()} ({r.invoices} {t('analytics.invoices')})</span>
                   </div>
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${(Number(r.revenue || 0) / maxRevClient) * 100}%` }}/>
                   </div>
                 </div>
               ))}
-              {revClient.length === 0 && <p className="text-sm text-slate-300 text-center py-4">No invoices</p>}
+              {revClient.length === 0 && <p className="text-sm text-slate-300 text-center py-4">{t('analytics.no_invoices')}</p>}
             </div>
           </div>
 
           {/* Lawyer Utilization */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 lg:col-span-2">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Lawyer Utilization — استغلال المحامي</h3>
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{t('analytics.lawyer_utilization')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {utilization.map((u, i) => {
                 const util = Number(u.total_hours) > 0 ? Math.round(Number(u.billable_hours) / Number(u.total_hours) * 100) : 0;
@@ -169,12 +169,12 @@ export default function AnalyticsPage() {
                     <div>
                       <p className="font-medium text-sm text-slate-800">{u.name}</p>
                       <p className="text-[10px] text-slate-400 capitalize">{u.role?.replace(/_/g, " ")}</p>
-                      <p className="text-[10px] text-slate-300">{Number(u.billable_hours).toFixed(1)} / {Number(u.total_hours).toFixed(1)} hrs</p>
+                      <p className="text-[10px] text-slate-300">{Number(u.billable_hours).toFixed(1)} / {Number(u.total_hours).toFixed(1)} {t('analytics.hours_full')}</p>
                     </div>
                   </div>
                 );
               })}
-              {utilization.length === 0 && <p className="text-sm text-slate-300 col-span-3 text-center py-4">No time data</p>}
+              {utilization.length === 0 && <p className="text-sm text-slate-300 col-span-3 text-center py-4">{t('analytics.no_time_data')}</p>}
             </div>
           </div>
         </div>

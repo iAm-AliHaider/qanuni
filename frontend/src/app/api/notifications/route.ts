@@ -5,7 +5,7 @@ const sql = neon(process.env.DATABASE_URL!);
 async function ensureTables() {
   await sql`CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER,
     type TEXT NOT NULL DEFAULT 'info',
     title TEXT NOT NULL,
     title_ar TEXT,
@@ -93,21 +93,21 @@ export async function POST(request: NextRequest) {
     // Generate deadline notifications
     if (action === "check_deadlines") {
       // Hearings in next 3 days
-      const hearings = await sql`SELECT h.*, c.title as case_title, c.lead_partner_id FROM hearings h JOIN cases c ON h.case_id = c.id WHERE h.hearing_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '3 days'`;
+      const hearings = await sql`SELECT h.*, c.title as case_title, u.id as partner_user_id FROM hearings h JOIN cases c ON h.case_id = c.id LEFT JOIN users u ON u.id::text = c.assigned_partner WHERE h.hearing_date::date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '3 days'`;
       for (const h of hearings) {
-        if (h.lead_partner_id) {
+        if (h.partner_user_id) {
           await sql`INSERT INTO notifications (user_id, type, title, title_ar, message, link, entity_type, entity_id)
             SELECT ${h.lead_partner_id}, 'hearing', ${"Upcoming hearing: " + (h.case_title || "")}, ${"جلسة قادمة: " + (h.case_title || "")}, ${h.hearing_date + " at " + (h.hearing_time || "TBD")}, ${"/calendar"}, 'hearing', ${h.id}
-            WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE entity_type = 'hearing' AND entity_id = ${h.id} AND user_id = ${h.lead_partner_id} AND created_at > NOW() - INTERVAL '1 day')`;
+            WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE entity_type = 'hearing' AND entity_id = ${h.id} AND entity_id = ${h.id} AND created_at > NOW() - INTERVAL '1 day')`;
         }
       }
       // Filing deadlines in next 5 days
-      const filings = await sql`SELECT f.*, c.title as case_title, c.lead_partner_id FROM court_filings f JOIN cases c ON f.case_id = c.id WHERE f.deadline_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '5 days' AND f.status != 'filed'`;
+      const filings = await sql`SELECT f.*, c.title as case_title, u.id as partner_user_id FROM court_filings f JOIN cases c ON f.case_id = c.id LEFT JOIN users u ON u.id::text = c.assigned_partner WHERE f.deadline_date::date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '5 days' AND f.status != 'filed'`;
       for (const f of filings) {
-        if (f.lead_partner_id) {
+        if (f.partner_user_id) {
           await sql`INSERT INTO notifications (user_id, type, title, title_ar, message, link, entity_type, entity_id)
             SELECT ${f.lead_partner_id}, 'deadline', ${"Filing deadline: " + (f.title || "")}, ${"موعد تقديم: " + (f.title || "")}, ${"Due: " + f.deadline_date}, ${"/filings"}, 'filing', ${f.id}
-            WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE entity_type = 'filing' AND entity_id = ${f.id} AND user_id = ${f.lead_partner_id} AND created_at > NOW() - INTERVAL '1 day')`;
+            WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE entity_type = 'filing' AND entity_id = ${f.id} AND entity_id = ${f.id} AND created_at > NOW() - INTERVAL '1 day')`;
         }
       }
       // Overdue tasks
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       for (const t of tasks) {
         await sql`INSERT INTO notifications (user_id, type, title, title_ar, message, link, entity_type, entity_id)
           SELECT ${t.assigned_to}, 'overdue', ${"Overdue task: " + (t.title || "")}, ${"مهمة متأخرة: " + (t.title || "")}, ${"Was due: " + t.due_date}, ${"/tasks"}, 'task', ${t.id}
-          WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE entity_type = 'task' AND entity_id = ${t.id} AND user_id = ${t.assigned_to} AND created_at > NOW() - INTERVAL '1 day')`;
+          WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE entity_type = 'task' AND entity_id = ${t.id} AND user_id = null AND created_at > NOW() - INTERVAL '1 day')`;
       }
       return NextResponse.json({ success: true, checked: { hearings: hearings.length, filings: filings.length, tasks: tasks.length } });
     }
