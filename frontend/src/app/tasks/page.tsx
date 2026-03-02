@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
 import { useState, useEffect } from "react";
@@ -8,6 +9,7 @@ const S_COLORS: Record<string, string> = { todo: "bg-gray-100 text-gray-600", in
 const COLS = ["todo", "in_progress", "completed"];
 
 export default function TasksPage() {
+  const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [cases, setCases] = useState<any[]>([]);
@@ -38,8 +40,8 @@ export default function TasksPage() {
     <AppShell><div className="min-h-[100dvh] bg-transparent">
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
           <div className="px-6 flex items-center justify-between h-14">
-            <h1 className="text-lg font-bold text-slate-900">Task Board</h1>
-          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>New Task</button>
+            <h1 className="text-lg font-bold text-slate-900">{t("task.board")}</h1>
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>{t("task.new_task")}</button>
         </div>
       </header>
       <main className="p-3 md:p-6">
@@ -63,7 +65,7 @@ export default function TasksPage() {
                       <span className="text-[10px] text-slate-400">{t.assignee_name}{t.due_date ? ` · ${t.due_date}` : ""}</span>
                       <div className="flex gap-1">
                         {col !== "completed" && <button onClick={() => updateStatus(t.id, col === "todo" ? "in_progress" : "completed")} className="px-2 py-0.5 rounded bg-emerald-50 text-[9px] text-emerald-700 font-semibold hover:bg-emerald-100">{col === "todo" ? "Start" : "Done"}</button>}
-                        {col === "completed" && <button onClick={() => updateStatus(t.id, "todo")} className="px-2 py-0.5 rounded bg-slate-100 text-[9px] text-slate-500 font-semibold">Reopen</button>}
+                        {col === "completed" && <button onClick={() => updateStatus(t.id, "todo")} className="px-2 py-0.5 rounded bg-slate-100 text-[9px] text-slate-500 font-semibold">{t("common.reopen")}</button>}
                       </div>
                     </div>
                   </div>
@@ -78,15 +80,15 @@ export default function TasksPage() {
         <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center z-50" onClick={() => setShowForm(false)}>
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md p-5 space-y-3 max-h-[90dvh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-slate-900">New Task</h3>
-            <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Task title *" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
+            <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder={t("task.title") + " *"} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
             <div className="grid grid-cols-2 gap-2">
               <select value={form.case_id} onChange={e => setForm(p => ({ ...p, case_id: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"><option value="">Case (optional)</option>{cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref}</option>)}</select>
               <select value={form.priority} onChange={e => setForm(p => ({ ...p, priority: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">{["critical","high","medium","low"].map(p => <option key={p} value={p}>{p}</option>)}</select>
               <select value={form.assigned_to} onChange={e => setForm(p => ({ ...p, assigned_to: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"><option value="">Assign to...</option>{users.map((u: any) => <option key={u.id} value={u.id}>{u.name}</option>)}</select>
               <input type="date" value={form.due_date} onChange={e => setForm(p => ({ ...p, due_date: e.target.value }))} className="px-3 py-2 rounded-lg border border-slate-200 text-sm" />
             </div>
-            <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Description" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={2} />
-            <div className="flex gap-2"><button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button><button onClick={create} disabled={!form.title} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">Create</button></div>
+            <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder={t("common.description")} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={2} />
+            <div className="flex gap-2"><button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">{t("common.cancel")}</button><button onClick={create} disabled={!form.title} className="flex-1 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">{t("common.create")}</button></div>
           </div>
         </div>
       )}

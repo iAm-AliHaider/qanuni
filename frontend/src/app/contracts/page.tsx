@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
 
@@ -6,6 +7,7 @@ const TYPE_COLORS: Record<string, string> = { retainer: "bg-emerald-100 text-eme
 const STATUS_COLORS: Record<string, string> = { draft: "bg-gray-100 text-gray-600", active: "bg-emerald-100 text-emerald-700", expired: "bg-red-100 text-red-700", terminated: "bg-slate-200 text-slate-600", renewed: "bg-blue-100 text-blue-700" };
 
 export default function ContractsPage() {
+  const { t } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [data, setData] = useState<any>(null);
   const [clients, setClients] = useState<any[]>([]);
@@ -37,8 +39,8 @@ export default function ContractsPage() {
     <AppShell><div className="min-h-[100dvh] bg-transparent">
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
         <div className="px-6 flex items-center justify-between h-14">
-          <h1 className="text-lg font-bold text-slate-900">Contract Management</h1>
-          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>New Contract</button>
+          <h1 className="text-lg font-bold text-slate-900">{t("ctr.title")}</h1>
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>{t("ctr.new_contract")}</button>
         </div>
       </header>
       <main className="p-3 md:p-6 max-w-6xl mx-auto space-y-4 page-transition">
@@ -48,8 +50,8 @@ export default function ContractsPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 stagger">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-blue-400 animate-slide-up card-hover"><p className="text-xl font-bold text-blue-600">{stats.total || 0}</p><p className="text-[10px] text-slate-400">Total</p></div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-emerald-400 animate-slide-up card-hover"><p className="text-xl font-bold text-emerald-600">{stats.active || 0}</p><p className="text-[10px] text-slate-400">Active</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-amber-400 animate-slide-up card-hover"><p className="text-xl font-bold text-amber-600">{Number(stats.active_value || 0).toLocaleString()}</p><p className="text-[10px] text-slate-400">Active Value (SAR)</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-red-400 animate-slide-up card-hover"><p className="text-xl font-bold text-red-600">{stats.expiring_soon || 0}</p><p className="text-[10px] text-slate-400">Expiring Soon</p></div>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-amber-400 animate-slide-up card-hover"><p className="text-xl font-bold text-amber-600">{Number(stats.active_value || 0).toLocaleString()}</p><p className="text-[10px] text-slate-400">{t("ctr.active_value")}</p></div>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-red-400 animate-slide-up card-hover"><p className="text-xl font-bold text-red-600">{stats.expiring_soon || 0}</p><p className="text-[10px] text-slate-400">{t("ctr.expiring_soon")}</p></div>
         </div>
 
         <div className="space-y-2 stagger">
@@ -77,14 +79,14 @@ export default function ContractsPage() {
                 <div className="text-right ml-3">
                   <p className="text-sm font-bold text-slate-800">{Number(c.value).toLocaleString()} SAR</p>
                   <div className="flex flex-col gap-1 mt-2">
-                    {!c.signed_by_firm && <button onClick={() => sign(c.id, "firm")} className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] text-emerald-700 font-semibold">Sign (Firm)</button>}
-                    {!c.signed_by_client && <button onClick={() => sign(c.id, "client")} className="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-[10px] text-blue-700 font-semibold">Sign (Client)</button>}
+                    {!c.signed_by_firm && <button onClick={() => sign(c.id, "firm")} className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] text-emerald-700 font-semibold">{t("common.sign_firm")}</button>}
+                    {!c.signed_by_client && <button onClick={() => sign(c.id, "client")} className="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-[10px] text-blue-700 font-semibold">{t("common.sign_client")}</button>}
                   </div>
                 </div>
               </div>
             </div>
           ))}
-          {contracts.length === 0 && <div className="text-center text-xs text-slate-400 py-12">No contracts</div>}
+          {contracts.length === 0 && <div className="text-center text-xs text-slate-400 py-12">{t("ctr.no_contracts")}</div>}
         </div>
       </main>
 
@@ -92,7 +94,7 @@ export default function ContractsPage() {
         <div className="fixed inset-0 bg-black/20 backdrop-blur-overlay flex items-end sm:items-center justify-center z-50" onClick={() => setShowForm(false)}>
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg p-5 space-y-3 max-h-[90dvh] overflow-y-auto animate-scale-in" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-slate-900">New Contract</h3>
-            <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Contract title *" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+            <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder={t("ctr.contract_title") + " *"} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
             <div className="grid grid-cols-2 gap-2">
               <select value={form.contract_type} onChange={e => setForm(p => ({ ...p, contract_type: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">{["service","retainer","litigation","advisory","employment"].map(t => <option key={t} value={t}>{t}</option>)}</select>
               <select value={form.client_id} onChange={e => setForm(p => ({ ...p, client_id: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">Client...</option>{clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
@@ -101,9 +103,9 @@ export default function ContractsPage() {
               <input type="date" value={form.start_date} onChange={e => setForm(p => ({ ...p, start_date: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
               <input type="date" value={form.end_date} onChange={e => setForm(p => ({ ...p, end_date: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
             </div>
-            <textarea value={form.terms} onChange={e => setForm(p => ({ ...p, terms: e.target.value }))} placeholder="Terms & conditions" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm resize-none" rows={2} />
-            <textarea value={form.obligations} onChange={e => setForm(p => ({ ...p, obligations: e.target.value }))} placeholder="Key obligations" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm resize-none" rows={2} />
-            <div className="flex gap-2"><button onClick={() => setShowForm(false)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button><button onClick={create} disabled={!form.title} className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">Create</button></div>
+            <textarea value={form.terms} onChange={e => setForm(p => ({ ...p, terms: e.target.value }))} placeholder={t("ctr.terms")} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm resize-none" rows={2} />
+            <textarea value={form.obligations} onChange={e => setForm(p => ({ ...p, obligations: e.target.value }))} placeholder={t("ctr.obligations")} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm resize-none" rows={2} />
+            <div className="flex gap-2"><button onClick={() => setShowForm(false)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">{t("common.cancel")}</button><button onClick={create} disabled={!form.title} className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">{t("common.create")}</button></div>
           </div>
         </div>
       )}

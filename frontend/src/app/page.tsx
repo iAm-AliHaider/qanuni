@@ -217,7 +217,9 @@ function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
 // ═══════════════════════════════════════════════════════════════
 // CASE FORM (Create / Edit)
 // ═══════════════════════════════════════════════════════════════
-function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: any; clients: any[]; users: any[]; onSave: (d: any) => void; onCancel: () => void }) {
+function CaseForm({
+  caseData, clients, users, onSave, onCancel }: { caseData?: any; clients: any[]; users: any[]; onSave: (d: any) => void; onCancel: () => void }) {
+  const { t } = useLocale();
   const [form, setForm] = useState({
     title: caseData?.title || "", title_ar: caseData?.title_ar || "", case_type: caseData?.case_type || "",
     practice_area: caseData?.practice_area || "", status: caseData?.status || "intake", priority: caseData?.priority || "medium",
@@ -245,7 +247,7 @@ function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: a
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
-        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Case Information</h3>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t("case.info")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input label="Title *" value={form.title} onChange={(e: any) => set("title", e.target.value)} placeholder="Case title in English" />
           <Input label="Title (Arabic)" value={form.title_ar} onChange={(e: any) => set("title_ar", e.target.value)} placeholder="عنوان القضية" dir="rtl" />
@@ -258,7 +260,7 @@ function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: a
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
-        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Opposing Side & Court</h3>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t("case.opposing_court")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Input label="Opposing Party" value={form.opposing_party} onChange={(e: any) => set("opposing_party", e.target.value)} />
           <Input label="Opposing Counsel" value={form.opposing_counsel} onChange={(e: any) => set("opposing_counsel", e.target.value)} />
@@ -269,7 +271,7 @@ function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: a
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
-        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Team & Fees</h3>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t("case.team_fees")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Select label="Lead Partner" value={form.assigned_partner} onChange={(e: any) => set("assigned_partner", e.target.value)} options={partners.map((u: any) => ({ value: u.id, label: u.name }))} />
           <Select label="Associate" value={form.assigned_associate} onChange={(e: any) => set("assigned_associate", e.target.value)} options={associates.map((u: any) => ({ value: u.id, label: u.name }))} />
@@ -286,7 +288,9 @@ function CaseForm({ caseData, clients, users, onSave, onCancel }: { caseData?: a
 // ═══════════════════════════════════════════════════════════════
 // CASE DETAIL VIEW
 // ═══════════════════════════════════════════════════════════════
-function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: User; onBack: () => void; onEdit: (c: any) => void }) {
+function CaseDetail({
+  caseId, user, onBack, onEdit }: { caseId: number; user: User; onBack: () => void; onEdit: (c: any) => void }) {
+  const { t } = useLocale();
   const [cs, setCs] = useState<any>(null);
   const [tab, setTab] = useState("overview");
   const [noteText, setNoteText] = useState("");
@@ -315,7 +319,7 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
   };
 
   const tabs = [
-    { key: "overview", label: "Overview" }, { key: "hearings", label: `Hearings (${cs.hearings?.length || 0})` },
+    { key: "overview", label: t("dash.overview") }, { key: "hearings", label: `Hearings (${cs.hearings?.length || 0})` },
     { key: "tasks", label: `Tasks (${cs.tasks?.length || 0})` }, { key: "notes", label: `Notes (${cs.notes?.length || 0})` },
     { key: "time", label: `Time (${cs.timeEntries?.length || 0})` }, { key: "documents", label: `Docs (${cs.documents?.length || 0})` },
   ];
@@ -469,7 +473,9 @@ function CaseDetail({ caseId, user, onBack, onEdit }: { caseId: number; user: Us
 // ═══════════════════════════════════════════════════════════════
 // CLIENT FORM (Create / Edit)
 // ═══════════════════════════════════════════════════════════════
-function ClientForm({ clientData, onSave, onCancel }: { clientData?: any; onSave: (d: any) => void; onCancel: () => void }) {
+function ClientForm({
+  clientData, onSave, onCancel }: { clientData?: any; onSave: (d: any) => void; onCancel: () => void }) {
+  const { t } = useLocale();
   const [form, setForm] = useState({
     name: clientData?.name || "", name_ar: clientData?.name_ar || "", client_type: clientData?.client_type || "individual",
     email: clientData?.email || "", phone: clientData?.phone || "", phone2: clientData?.phone2 || "",
@@ -525,7 +531,9 @@ function ClientForm({ clientData, onSave, onCancel }: { clientData?: any; onSave
 // ═══════════════════════════════════════════════════════════════
 // CLIENT DETAIL VIEW
 // ═══════════════════════════════════════════════════════════════
-function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId: number; user: User; onBack: () => void; onEdit: (c: any) => void; onOpenCase: (id: number) => void }) {
+function ClientDetail({
+  clientId, user, onBack, onEdit, onOpenCase }: { clientId: number; user: User; onBack: () => void; onEdit: (c: any) => void; onOpenCase: (id: number) => void }) {
+  const { t } = useLocale();
   const [cl, setCl] = useState<any>(null);
   const [tab, setTab] = useState("overview");
   const [showContactForm, setShowContactForm] = useState(false);
@@ -705,6 +713,7 @@ function ClientDetail({ clientId, user, onBack, onEdit, onOpenCase }: { clientId
 // MAIN DASHBOARD
 // ═══════════════════════════════════════════════════════════════
 function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
+  const { t } = useLocale();
   const [data, setData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQ, setSearchQ] = useState("");
@@ -758,11 +767,11 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
   const tabs = [
     { key: "overview", label: "Overview", icon: "O" },
     { key: "cases", label: "Cases", icon: "C" },
-    { key: "clients", label: "Clients", icon: "P" },
-    { key: "hearings", label: "Hearings", icon: "H" },
-    { key: "tasks", label: "Tasks", icon: "T" },
+    { key: "clients", label: t("nav.clients"), icon: "P" },
+    { key: "hearings", label: t("dash.hearings"), icon: "H" },
+    { key: "tasks", label: t("dash.pending_tasks"), icon: "T" },
     { key: "time_entries", label: "Time", icon: "E" },
-    { key: "deadlines", label: "Deadlines", icon: "D" },
+    { key: "deadlines", label: t("dash.deadlines"), icon: "D" },
   ];
 
   // Render detail views / forms
@@ -829,7 +838,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
           <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
               {[
-                { label: "Active Cases", value: data.activeCases, border: "border-l-emerald-400", text: "text-emerald-600" },
+                { label: t("dash.active_cases"), value: data.activeCases, border: "border-l-emerald-400", text: "text-emerald-600" },
                 { label: "Hearings", value: data.upcomingHearings, border: "border-l-blue-400", text: "text-blue-600" },
                 { label: "Tasks", value: data.pendingTasks, border: "border-l-amber-400", text: "text-amber-600" },
                 { label: "Deadlines", value: data.overdueDeadlines, border: "border-l-red-400", text: "text-red-600" },
@@ -846,8 +855,8 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
               {/* Recent Cases */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-slate-800">Recent Cases</h3>
-                  <button onClick={() => setActiveTab("cases")} className="text-[10px] text-emerald-600 font-semibold hover:underline">View All</button>
+                  <h3 className="text-sm font-bold text-slate-800">{t("dash.recent_cases")}</h3>
+                  <button onClick={() => setActiveTab("cases")} className="text-[10px] text-emerald-600 font-semibold hover:underline">{t("dash.view_all")}</button>
                 </div>
                 <div className="divide-y divide-slate-50">
                   {(data.recentCases || []).map((c: any) => (
@@ -870,7 +879,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
               {/* Upcoming Hearings */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-slate-800">Upcoming Hearings</h3>
+                  <h3 className="text-sm font-bold text-slate-800">{t("dash.upcoming_hearings")}</h3>
                   <button onClick={() => setActiveTab("hearings")} className="text-[10px] text-emerald-600 font-semibold hover:underline">View All</button>
                 </div>
                 <div className="divide-y divide-slate-50">
@@ -882,14 +891,14 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
                       </div>
                     </div>
                   ))}
-                  {(!data.upcomingHearingsList || data.upcomingHearingsList.length === 0) && <div className="px-4 py-6 text-center text-xs text-slate-400">No upcoming hearings</div>}
+                  {(!data.upcomingHearingsList || data.upcomingHearingsList.length === 0) && <div className="px-4 py-6 text-center text-xs text-slate-400">{t("dash.no_upcoming")}</div>}
                 </div>
               </div>
 
               {/* Tasks */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-slate-800">Pending Tasks</h3>
+                  <h3 className="text-sm font-bold text-slate-800">{t("dash.pending_tasks")}</h3>
                   <button onClick={() => setActiveTab("tasks")} className="text-[10px] text-emerald-600 font-semibold hover:underline">View All</button>
                 </div>
                 <div className="divide-y divide-slate-50">
@@ -909,7 +918,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
 
               {/* Deadlines */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">Upcoming Deadlines</h3></div>
+                <div className="px-4 py-3 border-b border-slate-100"><h3 className="text-sm font-bold text-slate-800">{t("dash.deadlines")}</h3></div>
                 <div className="divide-y divide-slate-50">
                   {(data.urgentDeadlines || []).map((d: any, i: number) => (
                     <div key={i} className="px-4 py-3 hover:bg-slate-50/50">
@@ -919,7 +928,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
                       </div>
                     </div>
                   ))}
-                  {(!data.urgentDeadlines || data.urgentDeadlines.length === 0) && <div className="px-4 py-6 text-center text-xs text-slate-400">No pending deadlines</div>}
+                  {(!data.urgentDeadlines || data.urgentDeadlines.length === 0) && <div className="px-4 py-6 text-center text-xs text-slate-400">{t("dash.no_deadlines")}</div>}
                 </div>
               </div>
             </div>
@@ -928,7 +937,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
 
             {data.casesByType?.length > 0 && (
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
-                <h3 className="text-sm font-bold text-slate-800 mb-3">Cases by Practice Area</h3>
+                <h3 className="text-sm font-bold text-slate-800 mb-3">{t("dash.cases_by_area")}</h3>
                 <div className="flex flex-wrap gap-2">
                   {data.casesByType.map((ct: any) => (
                     <div key={ct.case_type} className={`px-3 py-2 rounded-xl border ${CASE_TYPE_COLORS[ct.case_type] || "bg-gray-50 border-gray-100"}`}>
@@ -947,7 +956,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
             <div className="flex items-center justify-between gap-3">
               <div className="relative flex-1 max-w-md">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2"><SearchIcon /></div>
-                <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search cases..." className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-200 outline-none" />
+                <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder={t("common.search") + " " + t("nav.cases").toLowerCase() + "..."} className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-200 outline-none" />
               </div>
               <button onClick={() => setShowCaseForm({})} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"><PlusIcon /> New Case</button>
             </div>
@@ -972,7 +981,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
                 </div>
               </div>
             ))}
-            {Array.isArray(data) && data.length === 0 && <div className="text-center text-sm text-slate-400 py-12">No cases found</div>}
+            {Array.isArray(data) && data.length === 0 && <div className="text-center text-sm text-slate-400 py-12">{t("case.no_cases")}</div>}
           </div>
 
         // ── CLIENTS TAB ──
@@ -981,7 +990,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
             <div className="flex items-center justify-between gap-3">
               <div className="relative flex-1 max-w-md">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2"><SearchIcon /></div>
-                <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search clients..." className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-200 outline-none" />
+                <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder={t("common.search") + " " + t("nav.clients").toLowerCase() + "..."} className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-200 outline-none" />
               </div>
               <button onClick={() => setShowClientForm({})} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"><PlusIcon /> New Client</button>
             </div>
@@ -1005,7 +1014,7 @@ function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
                 </div>
               </div>
             ))}
-            {Array.isArray(data) && data.length === 0 && <div className="text-center text-sm text-slate-400 py-12">No clients found</div>}
+            {Array.isArray(data) && data.length === 0 && <div className="text-center text-sm text-slate-400 py-12">{t("client.no_clients")}</div>}
           </div>
 
         // ── HEARINGS TAB ──

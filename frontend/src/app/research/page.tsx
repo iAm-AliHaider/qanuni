@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/LocaleContext";
 import AppShell from "@/components/AppShell";
 
 import { useState } from "react";
@@ -13,6 +14,7 @@ const TOPICS = [
 ];
 
 export default function ResearchPage() {
+  const { t } = useLocale();
   const [search, setSearch] = useState("");
   const filtered = TOPICS.filter(t => !search || t.title.toLowerCase().includes(search.toLowerCase()) || t.tags.some(tag => tag.includes(search.toLowerCase())));
 
@@ -20,13 +22,13 @@ export default function ResearchPage() {
     <AppShell><div className="min-h-[100dvh] bg-transparent">
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
           <div className="px-6 flex items-center justify-between h-14">
-            <h1 className="text-lg font-bold text-slate-900">Legal Research</h1></div>
+            <h1 className="text-lg font-bold text-slate-900">{t("res.title")}</h1></div>
       </header>
       <main className="p-3 md:p-6 max-w-5xl mx-auto space-y-4">
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-slate-800 mb-2">Search Legal Topics</h3>
+          <h3 className="text-sm font-bold text-slate-800 mb-2">{t("res.search_topics")}</h3>
           <div className="relative"><svg className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search topics, tags..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm" /></div>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("res.search_placeholder")} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm" /></div>
           <p className="text-[10px] text-slate-400 mt-2">Search Saudi legal topics, regulations, and precedents. Future: AI-powered legal research with Qdrant KB.</p>
         </div>
 
@@ -41,7 +43,7 @@ export default function ResearchPage() {
         </div>
 
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5 text-center">
-          <p className="text-sm font-semibold text-slate-700">AI-Powered Research Coming Soon</p>
+          <p className="text-sm font-semibold text-slate-700">{t("res.ai_coming")}</p>
           <p className="text-xs text-slate-400 mt-1">Semantic search across Saudi legal codes, MOJ circulars, and case precedents via Qdrant knowledge base.</p>
         </div>
       </main>
