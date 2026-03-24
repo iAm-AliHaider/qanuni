@@ -5,7 +5,7 @@ import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
 
 export default function CompliancePage() {
-  const { t } = useLocale();
+  const { t, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [data, setData] = useState<any>(null);
   const [checkName, setCheckName] = useState("");
@@ -30,7 +30,7 @@ export default function CompliancePage() {
   const expiringPoa = data?.expiringPoa || [];
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
           <div className="px-6 flex items-center justify-between h-14">
             <h1 className="text-lg font-bold text-slate-900">{t("comp.title")}</h1>
@@ -46,9 +46,9 @@ export default function CompliancePage() {
           </div>
           {checkResult && (
             <div className={`mt-3 p-3 rounded-xl ${checkResult.hasConflict ? "bg-red-50 border border-red-200" : "bg-emerald-50 border border-emerald-200"}`}>
-              <p className={`text-sm font-bold ${checkResult.hasConflict ? "text-red-700" : "text-emerald-700"}`}>{checkResult.hasConflict ? `Conflict Found (${checkResult.matches?.length} matches)` : "No Conflicts Found"}</p>
+              <p className={`text-sm font-bold ${checkResult.hasConflict ? "text-red-700" : "text-emerald-700"}`}>{checkResult.hasConflict ? `${t("comp.conflict_found")} (${checkResult.matches?.length} ${t("comp.matches_label")})` : t("comp.no_conflicts_found")}</p>
               {checkResult.matches?.map((m: any, i: number) => (
-                <div key={i} className="mt-2 text-xs text-red-600"><span className="font-mono">{m.ref}</span> — {m.title} (Client: {m.client_name}, Opposing: {m.opposing_party})</div>
+                <div key={i} className="mt-2 text-xs text-red-600"><span className="font-mono">{m.ref}</span> — {m.title} ({t("comp.client_label")}: {m.client_name}, {t("comp.opposing_label")}: {m.opposing_party})</div>
               ))}
             </div>
           )}
@@ -69,7 +69,7 @@ export default function CompliancePage() {
         </div>}
 
         {highRisk.length > 0 && <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div className="px-4 py-2.5 border-b border-slate-100 bg-red-50"><h3 className="text-xs font-bold text-red-800 uppercase">High Risk Clients</h3></div>
+           <div className="px-4 py-2.5 border-b border-slate-100 bg-red-50"><h3 className="text-xs font-bold text-red-800 uppercase">{t("comp.high_risk_clients_header")}</h3></div>
           <div className="divide-y divide-slate-50">{highRisk.map((c: any) => (
             <div key={c.id} className="px-4 py-3"><p className="text-sm font-medium text-slate-800">{c.name}</p><p className="text-[10px] text-slate-400">{c.client_type} · {c.ref}</p></div>
           ))}</div>
@@ -78,7 +78,7 @@ export default function CompliancePage() {
         {conflicts.length > 0 && <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="px-4 py-2.5 border-b border-slate-100"><h3 className="text-xs font-bold text-slate-600 uppercase">{t("comp.recent_checks")}</h3></div>
           <div className="divide-y divide-slate-50">{conflicts.map((c: any) => (
-            <div key={c.id} className="px-4 py-3 flex items-center justify-between"><div><p className="text-sm font-medium text-slate-800">{c.checked_name}</p><p className="text-[10px] text-slate-400">{c.checked_at}</p></div><span className={`px-2 py-0.5 rounded text-[9px] font-bold ${c.result === "clear" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>{c.result === "clear" ? "Clear" : `${c.conflicts_found} conflicts`}</span></div>
+            <div key={c.id} className="px-4 py-3 flex items-center justify-between"><div><p className="text-sm font-medium text-slate-800">{c.checked_name}</p><p className="text-[10px] text-slate-400">{c.checked_at}</p></div><span className={`px-2 py-0.5 rounded text-[9px] font-bold ${c.result === "clear" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>{c.result === "clear" ? t("audit.status.clear") : `${c.conflicts_found} ${t("comp.conflicts_label")}`}</span></div>
           ))}</div>
         </div>}
       </main>

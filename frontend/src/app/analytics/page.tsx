@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
               {pipeline.map((p, i) => (
                 <div key={i} className="flex items-center gap-1.5">
                   <div className={`w-2.5 h-2.5 rounded-sm ${PIPELINE_COLORS[i % PIPELINE_COLORS.length]}`}/>
-                  <span className="text-[11px] text-slate-600 capitalize">{p.status} ({p.count})</span>
+                  <span className="text-[11px] text-slate-600 capitalize">{t(`case.status.${p.status}`)} ({p.count})</span>
                 </div>
               ))}
             </div>

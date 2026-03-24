@@ -10,7 +10,7 @@ const STATUS_COLORS: Record<string, string> = { draft: "bg-gray-100 text-gray-60
 const FILING_TYPES = ["statement_of_claim", "defense", "evidence", "petition", "motion", "appeal", "response", "execution"];
 
 export default function FilingsPage() {
-  const { t } = useLocale();
+  const { t, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const userCanWrite = canWrite(user?.role || "admin", "filings" as any);
   const [data, setData] = useState<any>(null);
@@ -42,7 +42,7 @@ export default function FilingsPage() {
   };
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
         <div className="px-6 flex items-center justify-between h-14">
           <h1 className="text-lg font-bold text-slate-900">{t("fil.title")}</h1>
@@ -50,14 +50,14 @@ export default function FilingsPage() {
         </div>
       </header>
       <main className="p-3 md:p-6 max-w-6xl mx-auto space-y-4 page-transition">
-        <div className="flex items-center justify-between md:hidden"><h1 className="text-lg font-bold text-slate-900">Filings</h1><button onClick={() => setShowForm(true)} className="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-semibold">+ New</button></div>
+        <div className="flex items-center justify-between md:hidden"><h1 className="text-lg font-bold text-slate-900">{t("fil.mobile_header")}</h1><button onClick={() => setShowForm(true)} className="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-semibold">+ {t("fil.new_filing")}</button></div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 stagger">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-blue-400 animate-slide-up card-hover"><p className="text-xl font-bold text-blue-600">{stats.total || 0}</p><p className="text-[10px] text-slate-400">Total</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-amber-400 animate-slide-up card-hover"><p className="text-xl font-bold text-amber-600">{stats.pending || 0}</p><p className="text-[10px] text-slate-400">{t("common.pending")}</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-emerald-400 animate-slide-up card-hover"><p className="text-xl font-bold text-emerald-600">{stats.filed || 0}</p><p className="text-[10px] text-slate-400">{t("fil.filed")}</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-violet-400 animate-slide-up card-hover"><p className="text-xl font-bold text-violet-600">{stats.responses_due || 0}</p><p className="text-[10px] text-slate-400">{t("fil.responses_due")}</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-red-400 animate-slide-up card-hover"><p className="text-xl font-bold text-red-600">{stats.overdue || 0}</p><p className="text-[10px] text-slate-400">{t("common.overdue")}</p></div>
+         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 stagger">
+           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-blue-400 animate-slide-up card-hover"><p className="text-xl font-bold text-blue-600">{stats.total || 0}</p><p className="text-[10px] text-slate-400">{t("fil.total_label")}</p></div>
+           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-amber-400 animate-slide-up card-hover"><p className="text-xl font-bold text-amber-600">{stats.pending || 0}</p><p className="text-[10px] text-slate-400">{t("fil.pending_label")}</p></div>
+           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-emerald-400 animate-slide-up card-hover"><p className="text-xl font-bold text-emerald-600">{stats.filed || 0}</p><p className="text-[10px] text-slate-400">{t("fil.filed_label")}</p></div>
+           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-violet-400 animate-slide-up card-hover"><p className="text-xl font-bold text-violet-600">{stats.responses_due || 0}</p><p className="text-[10px] text-slate-400">{t("fil.responses_due_label")}</p></div>
+           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-red-400 animate-slide-up card-hover"><p className="text-xl font-bold text-red-600">{stats.overdue || 0}</p><p className="text-[10px] text-slate-400">{t("common.overdue")}</p></div>
         </div>
 
         <div className="space-y-2 stagger">
@@ -67,24 +67,24 @@ export default function FilingsPage() {
               <div key={f.id} className={`bg-white rounded-2xl border shadow-sm p-4 card-hover animate-slide-up ${isOverdue ? "border-red-200 bg-red-50/30" : "border-slate-200/80"}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-[10px] font-mono text-slate-400">{f.ref}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${TYPE_COLORS[f.filing_type] || "bg-gray-100 text-gray-500"}`}>{f.filing_type?.replace(/_/g, " ")}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${STATUS_COLORS[f.status] || "bg-gray-100 text-gray-500"}`}>{f.status}</span>
+                     <div className="flex items-center gap-2 mb-1 flex-wrap">
+                       <span className="text-[10px] font-mono text-slate-400">{f.ref}</span>
+                       <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${TYPE_COLORS[f.filing_type] || "bg-gray-100 text-gray-500"}`}>{t(`fil.type_${f.filing_type}`)}</span>
+                       <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${STATUS_COLORS[f.status] || "bg-gray-100 text-gray-500"}`}>{t(`fil.status_${f.status}`)}</span>
                       {f.response_required === 1 && <span className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-orange-100 text-orange-700">{t("fil.response_required")}</span>}
                       {isOverdue && <span className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-red-100 text-red-700 animate-pulse">{t("common.overdue")}</span>}
                     </div>
                     <p className="text-sm font-semibold text-slate-900">{f.title}</p>
-                    <div className="flex flex-wrap gap-3 mt-1 text-[10px] text-slate-400">
-                      {f.case_ref && <span>Case: {f.case_ref}</span>}
-                      {f.court_name && <span>Court: {f.court_name}</span>}
-                      {f.najiz_ref && <span className="font-mono">Najiz: {f.najiz_ref}</span>}
-                      {f.filer_name && <span>Filed by: {f.filer_name}</span>}
+                     <div className="flex flex-wrap gap-3 mt-1 text-[10px] text-slate-400">
+                       {f.case_ref && <span>{t("common.case")}: {f.case_ref}</span>}
+                       {f.court_name && <span>{t("common.court")}: {f.court_name}</span>}
+                       {f.najiz_ref && <span className="font-mono">{t("fil.najiz_ref")}: {f.najiz_ref}</span>}
+                       {f.filer_name && <span>{t("common.by")}: {f.filer_name}</span>}
                     </div>
                   </div>
-                  <div className="text-right ml-3">
-                    {f.deadline_date && <p className={`text-xs font-bold ${isOverdue ? "text-red-600" : "text-amber-600"}`}>Due: {f.deadline_date}</p>}
-                    {f.response_deadline && <p className="text-[10px] text-violet-600 mt-0.5">Response by: {f.response_deadline}</p>}
+                   <div className="text-right ml-3">
+                     {f.deadline_date && <p className={`text-xs font-bold ${isOverdue ? "text-red-600" : "text-amber-600"}`}>{t("common.due")}: {f.deadline_date}</p>}
+                     {f.response_deadline && <p className="text-[10px] text-violet-600 mt-0.5">{t("fil.response_deadline_label")}: {f.response_deadline}</p>}
                     {f.status !== "filed" && <button onClick={() => markFiled(f.id)} className="mt-2 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] text-emerald-700 font-semibold">{t("common.mark_filed")}</button>}
                   </div>
                 </div>
@@ -98,13 +98,13 @@ export default function FilingsPage() {
       {showForm && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-overlay flex items-end sm:items-center justify-center z-50" onClick={() => setShowForm(false)}>
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg p-5 space-y-3 max-h-[90dvh] overflow-y-auto animate-scale-in" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-900">New Court Filing</h3>
+             <h3 className="text-lg font-bold text-slate-900">{t("fil.new_filing_modal")}</h3>
             <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder={t("fil.filing_title") + " *"} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
             <div className="grid grid-cols-2 gap-2">
-              <select value={form.filing_type} onChange={e => setForm(p => ({ ...p, filing_type: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">{FILING_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}</select>
-              <select value={form.case_id} onChange={e => setForm(p => ({ ...p, case_id: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">Case *</option>{cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref}</option>)}</select>
-              <select value={form.court_id} onChange={e => setForm(p => ({ ...p, court_id: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">Court...</option>{courts.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-              <input value={form.najiz_ref} onChange={e => setForm(p => ({ ...p, najiz_ref: e.target.value }))} placeholder={t("fil.najiz_ref")} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+               <select value={form.filing_type} onChange={e => setForm(p => ({ ...p, filing_type: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">{FILING_TYPES.map(filingType => <option key={filingType} value={filingType}>{t(`fil.type_${filingType}`)}</option>)}</select>
+               <select value={form.case_id} onChange={e => setForm(p => ({ ...p, case_id: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">{t("fil.case_required")}</option>{cases.map((c: any) => <option key={c.id} value={c.id}>{c.ref}</option>)}</select>
+               <select value={form.court_id} onChange={e => setForm(p => ({ ...p, court_id: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">{t("fil.court_placeholder")}</option>{courts.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+               <input value={form.najiz_ref} onChange={e => setForm(p => ({ ...p, najiz_ref: e.target.value }))} placeholder={t("fil.najiz_ref_placeholder")} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
               <input type="date" value={form.deadline_date} onChange={e => setForm(p => ({ ...p, deadline_date: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
               <input type="date" value={form.response_deadline} onChange={e => setForm(p => ({ ...p, response_deadline: e.target.value }))} className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm" placeholder={t("fil.response_deadline")} />
             </div>

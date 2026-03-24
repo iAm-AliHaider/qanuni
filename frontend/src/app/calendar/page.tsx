@@ -48,7 +48,7 @@ export default function CalendarPage() {
   for (let d = 1; d <= daysInMonth; d++) days.push(d);
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       {/* Header */}
       <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30">
         <div className="px-4 md:px-6 flex items-center justify-between h-14">
@@ -74,7 +74,7 @@ export default function CalendarPage() {
         {/* Legend */}
         <div className="hidden md:flex flex-wrap gap-2 mb-4">
           {Object.entries(TYPE_COLORS).filter(([k]) => k !== "default").map(([type, colors]) => (
-            <span key={type} className={`px-2 py-0.5 rounded text-[9px] font-medium ${colors}`}>{type.replace(/_/g, " ")}</span>
+            <span key={type} className={`px-2 py-0.5 rounded text-[9px] font-medium ${colors}`}>{t(`cal.hearing_type_${type}`)}</span>
           ))}
         </div>
 
@@ -142,7 +142,7 @@ export default function CalendarPage() {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
               <div className="flex items-start justify-between">
                 <div>
-                  <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase ${TYPE_COLORS[selected.hearing_type] || TYPE_COLORS.default}`}>{selected.hearing_type?.replace(/_/g, " ")}</span>
+                  <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase ${TYPE_COLORS[selected.hearing_type] || TYPE_COLORS.default}`}>{t(`cal.hearing_type_${selected.hearing_type}`)}</span>
                   <h3 className="text-lg font-bold text-slate-900 mt-2">{selected.case_title}</h3>
                   <p className="text-xs text-slate-400 font-mono">{selected.case_ref} · {selected.ref}</p>
                 </div>

@@ -41,7 +41,7 @@ export default function AuditPage() {
           </div>
           <select value={filter} onChange={e => setFilter(e.target.value)} className="px-3 py-1.5 rounded-lg border border-slate-200 text-sm">
             <option value="">{t("audit.all_types")}</option>
-            {entityTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            {entityTypes.map(entityType => <option key={entityType} value={entityType}>{entityType}</option>)}
           </select>
         </div>
 
@@ -65,9 +65,9 @@ export default function AuditPage() {
                 {filtered.map(a => (
                   <tr key={a.id} className="border-t border-slate-50 hover:bg-slate-50/50">
                     <td className="px-4 py-2.5 text-[10px] text-slate-400 font-mono whitespace-nowrap">{new Date(a.created_at).toLocaleString()}</td>
-                    <td className="px-4 py-2.5 text-slate-700 font-medium">{a.user_name || "System"}</td>
-                    <td className="px-4 py-2.5 text-center"><span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${ACTION_COLORS[a.action] || ACTION_COLORS.view}`}>{a.action}</span></td>
-                    <td className="px-4 py-2.5 text-slate-500 capitalize">{a.entity_type}</td>
+                    <td className="px-4 py-2.5 text-slate-700 font-medium">{a.user_name || t("audit.system")}</td>
+                    <td className="px-4 py-2.5 text-center"><span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${ACTION_COLORS[a.action] || ACTION_COLORS.view}`}>{t(`audit.action.${a.action}`)}</span></td>
+                    <td className="px-4 py-2.5 text-slate-500 capitalize">{t(`common.${a.entity_type}`)}</td>
                     <td className="px-4 py-2.5 font-mono text-[10px] text-slate-500">{a.entity_ref || `#${a.entity_id || "—"}`}</td>
                     <td className="px-4 py-2.5 text-slate-400 text-[11px] max-w-[200px] truncate">{a.new_value || a.old_value || "—"}</td>
                   </tr>
