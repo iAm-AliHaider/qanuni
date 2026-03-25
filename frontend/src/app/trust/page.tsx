@@ -6,7 +6,7 @@ import AppShell from "@/components/AppShell";
 import { useState, useEffect } from "react";
 
 export default function TrustPage() {
-  const { t } = useLocale();
+  const { t, locale, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const userCanWrite = canWrite(user?.role || "admin", "trust" as any);
   const [data, setData] = useState<any>(null);
@@ -39,20 +39,20 @@ export default function TrustPage() {
   };
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
         <div className="px-6 flex items-center justify-between h-14">
           <h1 className="text-lg font-bold text-slate-900">{t("trust.title")}</h1>
           <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>{t("trust.new_account")}</button>
         </div>
       </header>
-      <main className="p-3 md:p-6 max-w-6xl mx-auto space-y-4 page-transition">
-        <div className="flex items-center justify-between md:hidden"><h1 className="text-lg font-bold text-slate-900">Trust</h1><button onClick={() => setShowCreate(true)} className="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-semibold">+ New</button></div>
+       <main className="p-3 md:p-6 max-w-6xl mx-auto space-y-4 page-transition">
+         <div className="flex items-center justify-between md:hidden"><h1 className="text-lg font-bold text-slate-900">{t("trust.trust_mobile_header")}</h1><button onClick={() => setShowCreate(true)} className="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-semibold">+ New</button></div>
 
         <div className="grid grid-cols-3 gap-2 stagger">
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-blue-400 animate-slide-up card-hover"><p className="text-xl font-bold text-blue-600">{stats.total_accounts || 0}</p><p className="text-[10px] text-slate-400">{t("trust.accounts")}</p></div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-emerald-400 animate-slide-up card-hover"><p className="text-xl font-bold text-emerald-600">{Number(stats.total_balance || 0).toLocaleString()}</p><p className="text-[10px] text-slate-400">{t("trust.total_balance")}</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-violet-400 animate-slide-up card-hover"><p className="text-xl font-bold text-violet-600">{stats.active || 0}</p><p className="text-[10px] text-slate-400">Active</p></div>
+           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 border-l-4 border-l-violet-400 animate-slide-up card-hover"><p className="text-xl font-bold text-violet-600">{stats.active || 0}</p><p className="text-[10px] text-slate-400">{t("trust.active_short")}</p></div>
         </div>
 
         {/* Accounts */}
@@ -96,9 +96,9 @@ export default function TrustPage() {
       {showCreate && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-overlay flex items-end sm:items-center justify-center z-50" onClick={() => setShowCreate(false)}>
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-sm p-5 space-y-3 animate-scale-in" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-900">{t("trust.new_trust")}</h3>
-            <select value={form.client_id} onChange={e => setForm(p => ({ ...p, client_id: e.target.value }))} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">Select Client *</option>{clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-            <div className="flex gap-2"><button onClick={() => setShowCreate(false)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">{t("common.cancel")}</button><button onClick={createAccount} disabled={!form.client_id} className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">Create</button></div>
+             <h3 className="text-lg font-bold text-slate-900">{t("trust.new_trust")}</h3>
+             <select value={form.client_id} onChange={e => setForm(p => ({ ...p, client_id: e.target.value }))} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="">{t("trust.select_client")} *</option>{clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+             <div className="flex gap-2"><button onClick={() => setShowCreate(false)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">{t("common.cancel")}</button><button onClick={createAccount} disabled={!form.client_id} className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold disabled:opacity-40">{t("trust.create_button")}</button></div>
           </div>
         </div>
       )}
@@ -106,11 +106,11 @@ export default function TrustPage() {
       {showDeposit && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-overlay flex items-end sm:items-center justify-center z-50" onClick={() => setShowDeposit(null)}>
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-sm p-5 space-y-3 animate-scale-in" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-900">{showDeposit.type === "deposit" ? "Deposit" : "Withdrawal"}</h3>
-            <input type="number" value={txForm.amount} onChange={e => setTxForm(p => ({ ...p, amount: e.target.value }))} placeholder="Amount (SAR) *" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
-            <input value={txForm.description} onChange={e => setTxForm(p => ({ ...p, description: e.target.value }))} placeholder="Description" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
-            <input value={txForm.reference} onChange={e => setTxForm(p => ({ ...p, reference: e.target.value }))} placeholder={t("trust.reference")} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
-            <div className="flex gap-2"><button onClick={() => setShowDeposit(null)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button><button onClick={submitTx} disabled={!txForm.amount} className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-40 ${showDeposit.type === "deposit" ? "bg-emerald-500" : "bg-red-500"}`}>{showDeposit.type === "deposit" ? "Deposit" : "Withdraw"}</button></div>
+             <h3 className="text-lg font-bold text-slate-900">{showDeposit.type === "deposit" ? t("trust.deposit_modal_title") : t("trust.withdrawal_modal_title")}</h3>
+             <input type="number" value={txForm.amount} onChange={e => setTxForm(p => ({ ...p, amount: e.target.value }))} placeholder={t("trust.amount_label") + " *"} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+             <input value={txForm.description} onChange={e => setTxForm(p => ({ ...p, description: e.target.value }))} placeholder={t("common.description")} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+             <input value={txForm.reference} onChange={e => setTxForm(p => ({ ...p, reference: e.target.value }))} placeholder={t("trust.reference")} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+             <div className="flex gap-2"><button onClick={() => setShowDeposit(null)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold">{t("common.cancel")}</button><button onClick={submitTx} disabled={!txForm.amount} className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-40 ${showDeposit.type === "deposit" ? "bg-emerald-500" : "bg-red-500"}`}>{showDeposit.type === "deposit" ? t("trust.deposit_button") : t("trust.withdraw_button")}</button></div>
           </div>
         </div>
       )}

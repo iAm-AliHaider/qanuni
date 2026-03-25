@@ -209,15 +209,15 @@ export default function TimePage() {
                     <input type="date" value={form.entry_date} onChange={e => setForm(p => ({ ...p, entry_date: e.target.value }))} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" />
                   </div>
                 </div>
-                <div>
-                  <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.activity_type")}</label>
-                  <select value={form.activity_type} onChange={e => setForm(p => ({ ...p, activity_type: e.target.value }))} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">
-                    {ACTIVITY_TYPES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
-                  </select>
-                </div>
+                 <div>
+                   <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.activity_type")}</label>
+                   <select value={form.activity_type} onChange={e => setForm(p => ({ ...p, activity_type: e.target.value }))} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white">
+                     {ACTIVITY_TYPES.map(a => <option key={a.value} value={a.value}>{t(`time.activity_${a.value}`)}</option>)}
+                   </select>
+                 </div>
                 <div>
                   <label className="text-[10px] font-medium text-slate-500 mb-1 block">{t("time.description")}</label>
-                  <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="What did you work on?" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={2} />
+                   <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder={t("time.description_placeholder")} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm resize-none" rows={2} />
                 </div>
                 <label className="flex items-center gap-2">
                   <input type="checkbox" checked={form.is_billable} onChange={e => setForm(p => ({ ...p, is_billable: e.target.checked }))} className="rounded border-slate-300" />

@@ -146,51 +146,51 @@ export default function ZATCAPage() {
 
         {/* Invoice Table */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Invoice ZATCA Status — حالة الفواتير</h3>
-          </div>
-          {loading ? (
-            <div className="p-10 text-center text-slate-400">Loading...</div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead><tr className="bg-slate-50 text-slate-500 text-[10px] uppercase">
-                <th className="px-4 py-2 text-left">Ref</th>
-                <th className="px-4 py-2 text-right">Amount (SAR)</th>
-                <th className="px-4 py-2 text-center">ZATCA Status</th>
-                <th className="px-4 py-2 text-center">Actions</th>
-              </tr></thead>
+         <div className="px-5 py-4 border-b border-slate-100">
+             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('zatca.zatca_status')} — {t('zatca.zatca_status')}</h3>
+           </div>
+           {loading ? (
+             <div className="p-10 text-center text-slate-400">{t('zatca.loading')}</div>
+           ) : (
+             <table className="w-full text-sm">
+               <thead><tr className="bg-slate-50 text-slate-500 text-[10px] uppercase">
+                 <th className="px-4 py-2 text-left">{t('zatca.ref')}</th>
+                 <th className="px-4 py-2 text-right">{t('zatca.amount_sar')}</th>
+                 <th className="px-4 py-2 text-center">{t('zatca.zatca_status')}</th>
+                 <th className="px-4 py-2 text-center">{t('zatca.actions')}</th>
+               </tr></thead>
               <tbody>
                 {(invoices || []).map((inv: any) => (
                   <tr key={inv.id} className="border-t border-slate-50 hover:bg-slate-50/50">
                     <td className="px-4 py-2.5 font-mono font-medium text-slate-800">{inv.ref || `INV-${inv.id}`}</td>
                     <td className="px-4 py-2.5 text-right font-bold text-emerald-600">{Number(inv.total || 0).toLocaleString()}</td>
-                    <td className="px-4 py-2.5 text-center">
-                      {inv.has_qr ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-700">
-                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                          Compliant
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-[10px] font-bold text-amber-700">
-                          Pending
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2.5 text-center">
-                      <div className="flex justify-center gap-1">
-                        {inv.has_qr ? (
-                          <button onClick={() => viewQR(inv)} className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] text-emerald-700 font-semibold hover:bg-emerald-100">View QR</button>
-                        ) : (
-                          <button
-                            onClick={() => generateOne(inv.id)}
-                            disabled={generating === inv.id}
-                            className="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-[10px] text-amber-700 font-semibold hover:bg-amber-100 disabled:opacity-50"
-                          >
-                            {generating === inv.id ? "Generating..." : "Generate"}
-                          </button>
-                        )}
-                      </div>
-                    </td>
+                     <td className="px-4 py-2.5 text-center">
+                       {inv.has_qr ? (
+                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-700">
+                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                           {t('zatca.compliant_status')}
+                         </span>
+                       ) : (
+                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-[10px] font-bold text-amber-700">
+                           {t('zatca.pending_status')}
+                         </span>
+                       )}
+                     </td>
+                     <td className="px-4 py-2.5 text-center">
+                       <div className="flex justify-center gap-1">
+                         {inv.has_qr ? (
+                           <button onClick={() => viewQR(inv)} className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] text-emerald-700 font-semibold hover:bg-emerald-100">{t('zatca.view_qr')}</button>
+                         ) : (
+                           <button
+                             onClick={() => generateOne(inv.id)}
+                             disabled={generating === inv.id}
+                             className="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-[10px] text-amber-700 font-semibold hover:bg-amber-100 disabled:opacity-50"
+                           >
+                             {generating === inv.id ? t('zatca.generating') : t('zatca.generate')}
+                           </button>
+                         )}
+                       </div>
+                     </td>
                   </tr>
                 ))}
               </tbody>
@@ -202,10 +202,10 @@ export default function ZATCAPage() {
         {selectedQR && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelectedQR(null)}>
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4" onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-slate-900">ZATCA QR Code</h3>
-                <button onClick={() => setSelectedQR(null)} className="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
-              </div>
+               <div className="flex items-center justify-between">
+                 <h3 className="text-lg font-bold text-slate-900">{t('zatca.qr_code')}</h3>
+                 <button onClick={() => setSelectedQR(null)} className="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
+               </div>
 
               {/* QR Code Canvas */}
               <div className="flex justify-center">
@@ -230,24 +230,24 @@ export default function ZATCAPage() {
                 </div>
               </div>
 
-              {/* Decoded TLV Data */}
-              {selectedQR.decoded && (
-                <div className="space-y-2 text-sm">
-                  <h4 className="text-[10px] font-bold text-slate-400 uppercase">TLV Decoded Data</h4>
-                  {[
-                    { tag: 1, label: "Seller", labelAr: "البائع", value: selectedQR.decoded.sellerName },
-                    { tag: 2, label: "VAT Number", labelAr: "الرقم الضريبي", value: selectedQR.decoded.vatNumber },
-                    { tag: 3, label: "Timestamp", labelAr: "الوقت", value: selectedQR.decoded.timestamp },
-                    { tag: 4, label: "Total (SAR)", labelAr: "الإجمالي", value: selectedQR.decoded.invoiceTotal },
-                    { tag: 5, label: "VAT (SAR)", labelAr: "الضريبة", value: selectedQR.decoded.vatTotal },
-                  ].map(row => (
-                    <div key={row.tag} className="flex items-center justify-between py-1 border-b border-slate-50">
-                      <span className="text-slate-500 text-[10px]">Tag {row.tag}: {row.label} <span className="text-slate-300">({row.labelAr})</span></span>
-                      <span className="font-mono font-medium text-slate-800 text-[11px]">{row.value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+               {/* Decoded TLV Data */}
+               {selectedQR.decoded && (
+                 <div className="space-y-2 text-sm">
+                   <h4 className="text-[10px] font-bold text-slate-400 uppercase">{t('zatca.compliance_status')}</h4>
+                   {[
+                     { tag: 1, label: t('zatca.seller_label'), labelAr: "البائع", value: selectedQR.decoded.sellerName },
+                     { tag: 2, label: t('zatca.vat_number_label'), labelAr: "الرقم الضريبي", value: selectedQR.decoded.vatNumber },
+                     { tag: 3, label: t('zatca.timestamp_label'), labelAr: "الوقت", value: selectedQR.decoded.timestamp },
+                     { tag: 4, label: t('zatca.total_sar_label'), labelAr: "الإجمالي", value: selectedQR.decoded.invoiceTotal },
+                     { tag: 5, label: t('zatca.vat_sar_label'), labelAr: "الضريبة", value: selectedQR.decoded.vatTotal },
+                   ].map(row => (
+                     <div key={row.tag} className="flex items-center justify-between py-1 border-b border-slate-50">
+                       <span className="text-slate-500 text-[10px]">Tag {row.tag}: {row.label} <span className="text-slate-300">({row.labelAr})</span></span>
+                       <span className="font-mono font-medium text-slate-800 text-[11px]">{row.value}</span>
+                     </div>
+                   ))}
+                 </div>
+               )}
 
               {/* Download XML */}
               {selectedQR.inv.zatca_xml && (
@@ -267,35 +267,35 @@ export default function ZATCAPage() {
                 </button>
               )}
 
-              <p className="text-[10px] text-center text-slate-300">Phase 1 TLV QR + Phase 2 UBL XML Ready</p>
+               <p className="text-[10px] text-center text-slate-300">{t('zatca.phase_ready')}</p>
             </div>
           </div>
         )}
 
         {/* Info Section */}
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200/50 p-5">
-          <h3 className="font-bold text-emerald-800 text-sm mb-2">ZATCA Compliance Status</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] text-emerald-700">
-            <div>
-              <p className="font-semibold mb-1">Phase 1 — Generation ✅</p>
-              <ul className="space-y-0.5 text-emerald-600">
-                <li>• TLV-encoded QR codes (BR-KSA-27)</li>
-                <li>• 5 mandatory fields: seller, VAT#, time, total, VAT</li>
-                <li>• Arabic seller name included</li>
-                <li>• Base64 encoded for QR rendering</li>
-              </ul>
-            </div>
-            <div>
-              <p className="font-semibold mb-1">Phase 2 — Integration 🔄</p>
-              <ul className="space-y-0.5 text-emerald-600">
-                <li>• UBL 2.1 XML generation ✅</li>
-                <li>• Cryptographic stamping (CSR/Certificate) — pending</li>
-                <li>• ZATCA API integration (sandbox) — pending</li>
-                <li>• Invoice clearance/reporting — pending</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+         <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200/50 p-5">
+           <h3 className="font-bold text-emerald-800 text-sm mb-2">{t('zatca.compliance_status')}</h3>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] text-emerald-700">
+             <div>
+               <p className="font-semibold mb-1">{t('zatca.phase_1')} ✅</p>
+               <ul className="space-y-0.5 text-emerald-600">
+                 <li>• {t('zatca.tlv_qr')}</li>
+                 <li>• {t('zatca.mandatory_fields')}</li>
+                 <li>• {t('zatca.arabic_name_included')}</li>
+                 <li>• {t('zatca.base64_encoded')}</li>
+               </ul>
+             </div>
+             <div>
+               <p className="font-semibold mb-1">{t('zatca.phase_2')} 🔄</p>
+               <ul className="space-y-0.5 text-emerald-600">
+                 <li>• {t('zatca.ubl_xml_gen')} ✅</li>
+                 <li>• {t('zatca.cryptographic_stamping')}</li>
+                 <li>• {t('zatca.api_integration_pending')}</li>
+                 <li>• {t('zatca.invoice_clearance_pending')}</li>
+               </ul>
+             </div>
+           </div>
+         </div>
       </div>
     </AppShell>
   );

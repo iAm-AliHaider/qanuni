@@ -13,7 +13,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function TemplatesPage() {
-  const { t } = useLocale();
+  const { t, locale, dir } = useLocale();
   const [templates, setTemplates] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -55,7 +55,7 @@ export default function TemplatesPage() {
     if (!preview) return;
     const w = window.open("", "_blank", "width=800,height=1000");
     if (!w) return;
-    w.document.write(`<!DOCTYPE html><html><head><title>${selected?.name || "Document"}</title>
+     w.document.write(`<!DOCTYPE html><html><head><title>${selected?.name || t('tmpl.document_title')}</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans Arabic', serif; max-width: 700px; margin: 40px auto; padding: 40px; line-height: 1.7; color: #1e293b; }
@@ -71,7 +71,7 @@ export default function TemplatesPage() {
 
   return (
     <AppShell>
-      <div className="p-4 md:p-8 space-y-6 max-w-6xl mx-auto">
+      <div className="p-4 md:p-8 space-y-6 max-w-6xl mx-auto" dir={dir}>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{t('tmpl.title')}</h1>
           <p className="text-sm text-slate-500">{t('tmpl.generate_docs')}</p>

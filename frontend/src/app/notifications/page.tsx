@@ -13,7 +13,7 @@ const TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string }> =
 };
 
 export default function NotificationsPage() {
-  const { t } = useLocale();
+  const { t, dir } = useLocale();
   const [user, setUser] = useState<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [activity, setActivity] = useState<any[]>([]);
@@ -63,9 +63,9 @@ export default function NotificationsPage() {
   const unread = notifications.filter(n => !n.is_read).length;
   if (!user) return null;
 
-  return (
-    <AppShell>
-      <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
+   return (
+     <AppShell>
+       <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto" dir={dir}>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">{t('notif.title')}</h1>

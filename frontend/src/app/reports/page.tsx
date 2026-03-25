@@ -4,19 +4,19 @@ import AppShell from "@/components/AppShell";
 
 import { useState, useEffect } from "react";
 
-const ROLE_LABELS: Record<string, string> = { managing_partner: "Managing Partner", senior_partner: "Senior Partner", partner: "Partner", senior_associate: "Senior Associate", associate: "Associate" };
+const ROLE_LABELS: Record<string, string> = { managing_partner: "Managing Partner", senior_partner: "Senior Partner", partner: "Partner", senior_associate: "Senior Associate", associate: "Associate" }; // TODO: Replace with t() calls if needed
 
 export default function ReportsPage() {
-  const { t } = useLocale();
+  const { t, locale, dir } = useLocale();
   const [data, setData] = useState<any>(null);
   const [tab, setTab] = useState("cases");
   useEffect(() => { fetch("/api/reports").then(r => r.json()).then(setData).catch(() => {}); }, []);
   if (!data) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-slate-200 border-t-emerald-500 animate-spin" /></div>;
 
-  const tabs = [{ key: "cases", label: "Cases" }, { key: "revenue", label: "Revenue" }, { key: "utilization", label: "Utilization" }, { key: "aging", label: "Aging" }];
+  const tabs = [{ key: "cases", label: t("rep.tab_cases") }, { key: "revenue", label: t("rep.tab_revenue") }, { key: "utilization", label: t("rep.tab_utilization") }, { key: "aging", label: t("rep.tab_aging") }];
 
   return (
-    <AppShell><div className="min-h-[100dvh] bg-transparent">
+    <AppShell><div className="min-h-[100dvh] bg-transparent" dir={dir}>
       <header className="bg-white/60 glass border-b border-slate-200/60 sticky top-0 z-20 hidden md:block">
           <div className="px-6 flex items-center justify-between h-14">
             <h1 className="text-lg font-bold text-slate-900">{t("rep.title")}</h1>
@@ -35,7 +35,7 @@ export default function ReportsPage() {
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
             <h3 className="text-sm font-bold text-slate-800 mb-3">{t("rep.cases_by_type")}</h3>
-            <div className="table-scroll"><table className="w-full text-xs"><thead><tr className="bg-slate-50 text-slate-500"><th className="px-3 py-2 text-left font-medium">Type</th><th className="px-3 py-2 text-left font-medium">Status</th><th className="px-3 py-2 text-right font-medium">Count</th></tr></thead>
+            <div className="table-scroll"><table className="w-full text-xs"><thead><tr className="bg-slate-50 text-slate-500"><th className="px-3 py-2 text-left font-medium">{t("rep.table_type_header")}</th><th className="px-3 py-2 text-left font-medium">{t("rep.table_status_header")}</th><th className="px-3 py-2 text-right font-medium">{t("rep.table_count_header")}</th></tr></thead>
               <tbody>{(data.casesByType || []).map((r: any, i: number) => (
                 <tr key={i} className="border-t border-slate-50"><td className="px-3 py-2 capitalize font-medium text-slate-700">{r.case_type?.replace("_", " ")}</td><td className="px-3 py-2 capitalize text-slate-500">{r.status}</td><td className="px-3 py-2 text-right font-bold">{r.count}</td></tr>
               ))}</tbody></table></div>
